@@ -59,8 +59,8 @@ const PlacesAutocomplete = ({ setSelected, selected, onSelect }) => {
 
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
-    setSelected({ lat, lng });
-    onSelect({ lat, lng });
+    setSelected({ lat, lng, address });
+    onSelect({ lat, lng, address });
   };
 
   const handleInputBlur = debounce(() => {
@@ -87,7 +87,7 @@ const PlacesAutocomplete = ({ setSelected, selected, onSelect }) => {
         placeholder="To"
         class="text-sm w-full px-4 py-2 border border-solid border-gray-300 rounded"
       />
-      <ComboboxPopover class="z-[11]">
+      <ComboboxPopover className="z-[11]">
         <ComboboxList>
           {status === "OK" &&
             data.map(({ place_id, description }) => (

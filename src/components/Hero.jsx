@@ -17,8 +17,8 @@ const Hero = () => {
 
         <div className="flex flex-row justify-between items-center">
           <h1 className="flex-1 font-poppins font-semibold ss:text-[52px] text-[52px] text-white ss:leading-[70.8px] leading-[75px]">
-            Find and {" "}
-            <span className="text-gradient">book</span>{" "} courier providers.
+            Send and {" "}
+            <span className="text-gradient">recieve</span>{" "} an item
           </h1>
         </div>
         <h1 className="font-poppins font-semibold ss:text-[52px] text-[52px] text-white ss:leading-[100.8px] leading-[75px]">
@@ -26,7 +26,7 @@ const Hero = () => {
         </h1>
         
         <p className={`${styles.paragraph} max-w-[600px] mt-5`}>
-          Our platform uses AI to identify the courier providers most likely to fit your needs.
+          A new way to send and recieve items in South Africa
         </p>
 
         <div className="ss:flex md:mr-4 mr-0">

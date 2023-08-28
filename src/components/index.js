@@ -11,6 +11,8 @@ import Hero from "./Hero";
 import Places from "./Places";
 import PlacesTo from "./PlacesTo";
 import Counter from "./Counter";
+import Home from "./Home";
+import Results from "./Results";
 
 export {
   Navbar,
@@ -26,4 +28,6 @@ export {
   Places,
   PlacesTo,
   Counter,
+  Home,
+  Results,
 };
