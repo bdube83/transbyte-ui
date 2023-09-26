@@ -96,23 +96,23 @@ export const footerLinks = [
     links: [
       {
         name: "Content",
-        link: "https://transbyte.com/content/",
+        link: "https://travelingafrican.com/content/",
       },
       {
         name: "How it Works",
-        link: "https://transbyte.com/how-it-works/",
+        link: "https://travelingafrican.com/how-it-works/",
       },
       {
         name: "Create",
-        link: "https://transbyte.com/create/",
+        link: "https://travelingafrican.com/create/",
       },
       {
         name: "Explore",
-        link: "https://transbyte.com/explore/",
+        link: "https://travelingafrican.com/explore/",
       },
       {
         name: "Terms & Services",
-        link: "https://transbyte.com/terms-and-services/",
+        link: "https://travelingafrican.com/terms-and-services/",
       },
     ],
   },
@@ -121,23 +121,23 @@ export const footerLinks = [
     links: [
       {
         name: "Help Center",
-        link: "https://transbyte.com/help-center/",
+        link: "https://travelingafrican.com/help-center/",
       },
       {
         name: "Partners",
-        link: "https://transbyte.com/partners/",
+        link: "https://travelingafrican.com/partners/",
       },
       {
         name: "Suggestions",
-        link: "https://transbyte.com/suggestions/",
+        link: "https://travelingafrican.com/suggestions/",
       },
       {
         name: "Blog",
-        link: "https://transbyte.com/blog/",
+        link: "https://travelingafrican.com/blog/",
       },
       {
         name: "Newsletters",
-        link: "https://transbyte.com/newsletters/",
+        link: "https://travelingafrican.com/newsletters/",
       },
     ],
   },
@@ -146,11 +146,11 @@ export const footerLinks = [
     links: [
       {
         name: "Our Partner",
-        link: "https://transbyte.com/our-partner/",
+        link: "https://travelingafrican.com/our-partner/",
       },
       {
         name: "Become a Partner",
-        link: "https://transbyte.com/become-a-partner/",
+        link: "https://travelingafrican.com/become-a-partner/",
       },
     ],
   },

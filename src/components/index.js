@@ -13,6 +13,7 @@ import PlacesTo from "./PlacesTo";
 import Counter from "./Counter";
 import Home from "./Home";
 import Results from "./Results";
+import Popup from "./Popup";
 
 export {
   Navbar,
@@ -30,4 +31,5 @@ export {
   Counter,
   Home,
   Results,
+  Popup,
 };
