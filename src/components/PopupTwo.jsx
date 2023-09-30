@@ -15,7 +15,7 @@ function PopupTwo(props) {
   return (props.trigger) ? (
     <div className='popup z-[10]'>
       <form onSubmit={handleSubmit}>
-            <div class="w-[360px] h-[844px] relative bg-slate-950">
+            <div class="w-[386px] h-[844px] relative bg-slate-950">
               <div class="w-[361px] h-[350px] left-[14px] top-[97px] absolute bg-white rounded-[3px]"></div>
               <div class="w-[361px] h-[59px] left-[14px] top-[97px] absolute">
                 <div class="w-[361px] h-[59px] left-0 top-0 absolute bg-zinc-100 rounded-[3px]"></div>
@@ -54,7 +54,7 @@ function PopupTwo(props) {
                 </div>
               </div>
               <img class="w-9 h-8 left-[27px] top-[112px] absolute" src="/transbytecourier.svg" />
-              <div class="w-[15px] h-[15px] exit-button hover:bg-red-500 rounded-full left-[-8px] top-[97px] absolute" role='button' onClick={() => props.setTrigger(false)}>
+              <div class="w-[15px] h-[15px] exit-button hover:bg-red-500 rounded-full left-[14px] top-[77px] absolute" role='button' onClick={() => props.setTrigger(false)}>
               </div>
             </div>
             { props.children }
