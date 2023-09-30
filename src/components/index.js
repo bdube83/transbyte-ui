@@ -14,6 +14,7 @@ import Counter from "./Counter";
 import Home from "./Home";
 import Results from "./Results";
 import Popup from "./Popup";
+import PopupTwo from "./PopupTwo";
 
 export {
   Navbar,
@@ -32,4 +33,5 @@ export {
   Home,
   Results,
   Popup,
+  PopupTwo,
 };

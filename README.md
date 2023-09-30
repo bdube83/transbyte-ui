@@ -1,4 +1,4 @@
-# travelingafrican - Modern UI/UX website using React.js & Tailwind CSS
+# transbytecourier - Modern UI/UX website using React.js & Tailwind CSS
 ## Instructions to run UI
 ### Linux computer 
 
@@ -26,5 +26,5 @@ npm run build
 ```
 2. Deploy app to Hostinger
 ```
-https://hpanel.hostinger.com/hosting/travelingafrican.com?hj=true
+https://hpanel.hostinger.com/hosting/transbytecourier.com?hj=true
 ```

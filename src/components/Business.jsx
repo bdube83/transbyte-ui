@@ -47,7 +47,7 @@ const Business = () =>  (
         </div>
       </div>
 
-      <div className={`z-[10] ${layout.sectionImg} flex-col`}>
+      <div className={`z-[9] ${layout.sectionImg} flex-col`}>
         <video width="320" height="240" controls>
           <source src="/ussd_pitch.mov" type='video/mp4' />
         </video>

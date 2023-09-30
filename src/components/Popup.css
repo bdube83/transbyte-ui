@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgb(0 0 0 / 81%);
 
     display: flex;
     justify-content: center;
@@ -23,4 +23,41 @@
     position: absolute;
     top: 16px;
     right: 16px;
+}
+
+.text-base {
+    font-size: 10px;
+}
+
+.places-container input {
+    background-image: url("/google_map_icon.png");
+    background-size: 6%;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    border: 1px solid #ccc;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+
+    text-indent: 20px;
+
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 2s;
+    transition: all 0.2s;
+}
+
+.exit-button {
+    background-image: url("/close_button.png");
+    background-size: 98%;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+    text-indent: 20px;
+
+    -webkit-transition: all 0.9s;
+    -moz-transition: all 0.9s;
+    transition: all 0.9s;
 }

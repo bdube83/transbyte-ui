@@ -96,23 +96,23 @@ export const footerLinks = [
     links: [
       {
         name: "Content",
-        link: "https://travelingafrican.com/content/",
+        link: "https://transbytecourier.com/content/",
       },
       {
         name: "How it Works",
-        link: "https://travelingafrican.com/how-it-works/",
+        link: "https://transbytecourier.com/how-it-works/",
       },
       {
         name: "Create",
-        link: "https://travelingafrican.com/create/",
+        link: "https://transbytecourier.com/create/",
       },
       {
         name: "Explore",
-        link: "https://travelingafrican.com/explore/",
+        link: "https://transbytecourier.com/explore/",
       },
       {
         name: "Terms & Services",
-        link: "https://travelingafrican.com/terms-and-services/",
+        link: "https://transbytecourier.com/terms-and-services/",
       },
     ],
   },
@@ -121,23 +121,23 @@ export const footerLinks = [
     links: [
       {
         name: "Help Center",
-        link: "https://travelingafrican.com/help-center/",
+        link: "https://transbytecourier.com/help-center/",
       },
       {
         name: "Partners",
-        link: "https://travelingafrican.com/partners/",
+        link: "https://transbytecourier.com/partners/",
       },
       {
         name: "Suggestions",
-        link: "https://travelingafrican.com/suggestions/",
+        link: "https://transbytecourier.com/suggestions/",
       },
       {
         name: "Blog",
-        link: "https://travelingafrican.com/blog/",
+        link: "https://transbytecourier.com/blog/",
       },
       {
         name: "Newsletters",
-        link: "https://travelingafrican.com/newsletters/",
+        link: "https://transbytecourier.com/newsletters/",
       },
     ],
   },
@@ -146,11 +146,11 @@ export const footerLinks = [
     links: [
       {
         name: "Our Partner",
-        link: "https://travelingafrican.com/our-partner/",
+        link: "https://transbytecourier.com/our-partner/",
       },
       {
         name: "Become a Partner",
-        link: "https://travelingafrican.com/become-a-partner/",
+        link: "https://transbytecourier.com/become-a-partner/",
       },
     ],
   },

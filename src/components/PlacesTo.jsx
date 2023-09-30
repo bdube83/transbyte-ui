@@ -84,8 +84,7 @@ const PlacesAutocomplete = ({ setSelected, selected, onSelect }) => {
         onBlur={handleInputBlur}
         disabled={!ready}
         className="combobox-input"
-        placeholder="To"
-        class="text-sm w-full px-4 py-2 border border-solid border-gray-300 rounded"
+        class="w-full rounded border border-gray-300 focus:border-indigo-500 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
       />
       <ComboboxPopover className="z-[11]">
         <ComboboxList>

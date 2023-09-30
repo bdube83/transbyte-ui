@@ -2,6 +2,8 @@ import { Places, PlacesTo, Counter } from ".";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Popup from "./Popup";
+import PopupTwo from "./PopupTwo";
 
 function Search() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,9 @@ function Search() {
     to_latitude: 0,
     // Add more form fields as needed
   });
+  const [buttonPopup, setButtonPopup] = useState(false);
+  const [buttonPopupTwo, setButtonPopupTwo] = useState(false);
+  const [parsedData, setParsedData] = useState();
 
   const navigate = useNavigate();
 
@@ -55,17 +60,7 @@ function Search() {
   }
     event.preventDefault();
     // Make the POST request using Axios
-    axios.post('https://9xpzluvgd0.execute-api.eu-north-1.amazonaws.com/prod/request', testFormData)
-      .then(response => {
-        // Handle the response as needed
-        console.log('Post successful:', response.data);
-        navigate('/search', { state: response.data }); // Redirect to the search page
-      })
-      .catch(error => {
-        // Handle errors
-        console.error('Error posting data:', error);
-        navigate('/search', { state: 'Error searching data' }); // Redirect to the search page
-      });
+    setButtonPopup(true);
   };
 
   const handleCounterChangeInput = (count, code) => {    
@@ -113,11 +108,17 @@ function Search() {
   };
 
   return (
-<form className="w-full" onSubmit={handleSubmit}>
-  <button className="bg-blue-700 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded">
+<div className="w-full" onSubmit={handleSubmit}>
+  <button className="bg-blue-700 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded" onClick={() => setButtonPopup(true)}>
     Launch Demo
   </button >
-</form>
+  <div className="bg-gray-200 rounded-lg">
+    <Popup trigger={buttonPopup} setTrigger={setButtonPopup} setTriggerTwo={setButtonPopupTwo} setCustomerData={setParsedData}>
+    </Popup>
+    <PopupTwo trigger={buttonPopupTwo} setTrigger={setButtonPopupTwo} customerData={parsedData}>
+    </PopupTwo>
+  </div>
+</div>
 );
   }
 
