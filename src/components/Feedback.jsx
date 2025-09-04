@@ -18,8 +18,31 @@ const Feedback = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, you’d send formData to your backend or email service
-    console.log("User Feedback:", formData);
+    
+    // Prepare email data for EdgeBox contact form
+    const emailData = {
+      to: "support@edgebox.africa",
+      subject: "EdgeBox Contact Form - New Inquiry",
+      body: `New contact form submission:
+      
+Name: ${formData.fullName}
+Email: ${formData.email}
+Phone: ${formData.phone}
+Company: ${formData.companyName}
+Job Title: ${formData.jobTitle}
+Additional Info: ${formData.additionalInfo}
+Date: ${new Date().toLocaleDateString()}
+
+Please follow up with this prospect regarding EdgeBox solutions.`
+    };
+    
+    // For now, log the data (replace with actual email service integration)
+    console.log("EdgeBox Contact Form:", emailData);
+    
+    // TODO: Integrate with email service (e.g., EmailJS, SendGrid, etc.)
+    // Example: emailjs.send('service_id', 'template_id', emailData)
+    
+    alert("Thank you for contacting us! We'll get back to you within 24 hours to discuss your edge computing needs.");
 
     // Clear the form or show a success message
     setFormData({

@@ -2,6 +2,10 @@ import React from "react";
 import { AiOutlineForm, AiOutlineLock, AiOutlineCar, AiOutlineCheckCircle } from "react-icons/ai";
 
 const HowItWorks = ({ onLaunchDemo }) => {
+  const handleContactUs = () => {
+    window.location.href = "#contact-us";
+  };
+  
   return (
     <section
       id="how-it-works"
@@ -60,7 +64,7 @@ const HowItWorks = ({ onLaunchDemo }) => {
         <div className="mt-8 text-center">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded"
-            onClick={onLaunchDemo}
+            onClick={handleContactUs}
           >
             Request Demo
           </button>

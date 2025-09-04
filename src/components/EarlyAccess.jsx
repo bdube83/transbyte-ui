@@ -7,8 +7,28 @@ const EarlyAccess = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Replace this with your actual sign-up logic (e.g., API call)
-    console.log("Early Access Sign Up:", { name, email });
+    
+    // Prepare email data for EdgeBox pilot program
+    const emailData = {
+      to: "support@edgebox.africa",
+      subject: "EdgeBox Pilot Program - New Registration",
+      body: `New pilot program registration:
+      
+Name: ${name}
+Email: ${email}
+Date: ${new Date().toLocaleDateString()}
+
+Please follow up for site assessment and deployment planning.`
+    };
+    
+    // For now, log the data (replace with actual email service integration)
+    console.log("EdgeBox Pilot Program Registration:", emailData);
+    
+    // TODO: Integrate with email service (e.g., EmailJS, SendGrid, etc.)
+    // Example: emailjs.send('service_id', 'template_id', emailData)
+    
+    alert("Thank you for joining our pilot program! We'll contact you soon for a site assessment.");
+    
     // Clear the form after submission
     setName("");
     setEmail("");

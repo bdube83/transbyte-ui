@@ -3,16 +3,15 @@ import React, { useState } from "react";
 const Search = ({ onLaunchDemo }) => {
   const [query, setQuery] = useState("");
 
-  const handleSearch = () => {
-    // Your search logic here...
-    console.log("Searching for:", query);
+  const handleContactUs = () => {
+    window.location.href = "#contact-us";
   };
 
   return (
     <div className="mt-6">
       <div className="mt-4">
         <button
-          onClick={onLaunchDemo}
+          onClick={handleContactUs}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Request Demo
