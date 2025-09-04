@@ -43,24 +43,24 @@ const Popup = ({ onClose, initialStep = 0 }) => {
         {step === 0 && (
           <div className="text-center">
             <h2 className="text-xl font-bold">
-              Experience 40% Faster, 100% Transparent Deliveries
+              Reduce Data Costs by 60%, Improve Uptime by 99%
             </h2>
             <p className="mb-6 max-w-[450px] mx-auto leading-relaxed text-gray-300">
-              Experience faster, safer, and stress-free deliveries with advanced AI 
-              route optimization and secure tracking.
+              Experience the power of edge computing with local AI processing, 
+              rugged hardware, and store-and-forward capabilities for your operations.
             </p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
               <button
                 onClick={() => setStep(1)}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               >
-                Try It Now
+                Request Demo
               </button>
               <button
                 onClick={handleSignUp}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               >
-                Sign Up
+                Join Pilot Program
               </button>
             </div>
           </div>
@@ -108,7 +108,7 @@ const Popup = ({ onClose, initialStep = 0 }) => {
                 onClick={handleSignUp}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               >
-                Sign Up
+                Join Pilot Program
               </button>
               <button
                 onClick={handleContactUs}
