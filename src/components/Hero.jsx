@@ -12,12 +12,12 @@ const Hero = ({ onLaunchDemo }) => {
       {/* Left (Text) Column */}
       <div className="flex-1 text-left">
         <h1 className="font-poppins font-semibold text-[40px] md:text-[50px] text-white leading-[1.2]">
-          Delivering Packages, <br className="hidden md:block" />
-          <span className="text-gradient">Made Simple</span>
+          Rugged Edge Computing <br className="hidden md:block" />
+          <span className="text-gradient">For Africa</span>
         </h1>
         <p className={`${styles.paragraph} mt-4 text-white max-w-[470px]`}>
-          We help everyday businesses and neighborhoods get your orders where
-          they need to go—fast, safe, and without the hassle.
+          Powerful edge computing solutions for logistics and mining operations. 
+          Reduce costs, improve uptime, and enable local AI processing in challenging environments.
         </p>
         <div className="mt-6">
           <GetStarted onLaunchDemo={onLaunchDemo} />

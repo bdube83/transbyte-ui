@@ -12,9 +12,9 @@ const HowItWorks = ({ onLaunchDemo }) => {
           How It Works
         </h2>
         <p className="text-center text-gray-300 max-w-xl mx-auto mb-8">
-          Follow these steps to see how our platform delivers speed, transparency, and convenience.
+          Follow these steps to implement edge computing at your site for maximum efficiency and cost savings.
           <br />
-          Each step is designed to give you the most reliable and efficient delivery experience possible.
+          Each step is designed to give you the most reliable and resilient computing infrastructure possible.
         </p>
 
         {/* Four-Column Steps */}
@@ -22,36 +22,36 @@ const HowItWorks = ({ onLaunchDemo }) => {
           {/* Step 1 */}
           <div className="bg-[#1C1C1C] p-6 rounded-md text-center flex flex-col items-center">
             <AiOutlineForm size={40} className="mb-4 text-blue-400" />
-            <h3 className="text-xl font-bold mb-2">1. Place Order</h3>
+            <h3 className="text-xl font-bold mb-2">1. Site Assessment</h3>
             <p className="text-sm text-gray-300">
-              Quickly enter your delivery details using our easy-to-use order form.
+              We analyze your environment, connectivity, and computing requirements for optimal deployment.
             </p>
           </div>
 
           {/* Step 2 */}
           <div className="bg-[#1C1C1C] p-6 rounded-md text-center flex flex-col items-center">
             <AiOutlineLock size={40} className="mb-4 text-blue-400" />
-            <h3 className="text-xl font-bold mb-2">2. Track on Blockchain</h3>
+            <h3 className="text-xl font-bold mb-2">2. Deploy Edge Nodes</h3>
             <p className="text-sm text-gray-300">
-              Every delivery is securely recorded, offering full transparency and peace of mind.
+              Install rugged computing hardware designed for harsh conditions and remote operations.
             </p>
           </div>
 
           {/* Step 3 */}
           <div className="bg-[#1C1C1C] p-6 rounded-md text-center flex flex-col items-center">
             <AiOutlineCar size={40} className="mb-4 text-blue-400" />
-            <h3 className="text-xl font-bold mb-2">3. See AI Route</h3>
+            <h3 className="text-xl font-bold mb-2">3. Configure AI Workloads</h3>
             <p className="text-sm text-gray-300">
-              Compare our optimized route to a standard route and see how you save time and costs.
+              Set up local AI processing, data analytics, and store-and-forward capabilities for your use case.
             </p>
           </div>
 
           {/* Step 4 */}
           <div className="bg-[#1C1C1C] p-6 rounded-md text-center flex flex-col items-center">
             <AiOutlineCheckCircle size={40} className="mb-4 text-blue-400" />
-            <h3 className="text-xl font-bold mb-2">4. Save Time</h3>
+            <h3 className="text-xl font-bold mb-2">4. Monitor & Optimize</h3>
             <p className="text-sm text-gray-300">
-              Enjoy faster, hassle-free deliveries with real-time updates in your dashboard.
+              Real-time monitoring and continuous optimization to ensure maximum uptime and cost efficiency.
             </p>
           </div>
         </div>

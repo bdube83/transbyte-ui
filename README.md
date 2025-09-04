@@ -1,4 +1,4 @@
-# transbytecourier - Modern UI/UX website using React.js & Tailwind CSS
+# EdgeBox Africa - Rugged Edge Computing Solutions Website using React.js & Tailwind CSS
 ## Instructions to run UI
 ### Linux computer 
 
@@ -26,5 +26,5 @@ npm run build
 ```
 2. Deploy app to Hostinger
 ```
-https://hpanel.hostinger.com/hosting/transbytecourier.com?hj=true
+https://hpanel.hostinger.com/hosting/edgeboxafrica.com?hj=true
 ```

@@ -26,12 +26,12 @@ const Business = ({ onLaunchDemo }) => {
           {/* Right Column: Text & Search */}
           <div className="flex-1 md:pl-10 mt-6 md:mt-0 text-center md:text-left">
             <h2 className={`${styles.heading2} text-white`}>
-              Making Delivery Easy for Everyone
+              Edge Computing Solutions That Work Anywhere
             </h2>
             <p className={`${styles.paragraph} mt-4 text-white max-w-[470px] mx-auto md:mx-0`}>
-              We know waiting for your package can be stressful. Our friendly solution
-              uses smart technology to keep you updated at every step—so you can relax
-              and enjoy your day.
+              Our rugged edge computing nodes operate reliably in remote mining sites,
+              logistics hubs, and challenging environments. Process data locally,
+              reduce bandwidth costs, and maintain operations even when connectivity is limited.
             </p>
             <div className="mt-6">
               <Search onLaunchDemo={onLaunchDemo} />

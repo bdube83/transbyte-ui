@@ -21,10 +21,10 @@ const EarlyAccess = () => {
     >
       <div className="max-w-3xl w-full text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Join Our Early Access Program
+          Join Our Pilot Program
         </h2>
         <p className="mb-6 text-gray-300">
-          Sign up now to receive free sample deliveries and be among the first to experience our innovative platform!
+          Sign up now for a free site assessment and be among the first to deploy EdgeBox at your location!
         </p>
         <form
           onSubmit={handleSubmit}

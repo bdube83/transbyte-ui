@@ -25,23 +25,23 @@ export const features = [
   {
     id: "feature-1",
     icon: star,
-    title: "Rewards",
+    title: "Edge AI Processing",
     content:
-      "The best credit cards offer some tantalizing combinations of promotions and prizes",
+      "Local AI processing capabilities that work even when connectivity is limited or unreliable.",
   },
   {
     id: "feature-2",
     icon: shield,
-    title: "100% Secured",
+    title: "Rugged & Reliable",
     content:
-      "We take proactive steps make sure your information and transactions are secure.",
+      "Hardware designed for harsh environments including mining sites, logistics hubs, and remote locations.",
   },
   {
     id: "feature-3",
     icon: send,
-    title: "Balance Transfer",
+    title: "Store & Forward",
     content:
-      "A balance transfer credit card can save you a lot of money in interest charges.",
+      "Smart data synchronization that reduces bandwidth costs and ensures critical data is never lost.",
   },
 ];
 
@@ -49,25 +49,25 @@ export const feedback = [
   {
     id: "feedback-1",
     content:
-      "Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver.",
-    name: "Herman Jensen",
-    title: "Founder & Leader",
+      "EdgeBox reduced our data costs by 65% and improved our operational uptime significantly. It's been a game-changer for our remote mining operations.",
+    name: "Sarah Mthembu",
+    title: "Operations Director, Witbank Mining",
     //img: people01,
   },
   {
     id: "feedback-2",
     content:
-      "Money makes your life easier. If you're lucky to have it, you're lucky.",
-    name: "Steve Mark",
-    title: "Founder & Leader",
+      "The rugged design works perfectly in our harsh logistics environment. Local AI processing has transformed how we manage inventory.",
+    name: "David Okonkwo",
+    title: "Logistics Manager, Trans-African Freight",
     //img: people02,
   },
   {
     id: "feedback-3",
     content:
-      "It is usually people in the money business, finance, and international trade that are really rich.",
-    name: "Kenn Gallagher",
-    title: "Founder & Leader",
+      "EdgeBox's store-and-forward capability means we never lose critical data, even when connectivity is poor. Essential for our operations.",
+    name: "Fatima Al-Rashid",
+    title: "IT Director, Sahara Logistics",
     //img: people03,
   },
 ];
@@ -75,18 +75,18 @@ export const feedback = [
 export const stats = [
   {
     id: "stats-1",
-    title: "Courier Providers",
-    value: "3800+",
+    title: "Edge Deployments",
+    value: "150+",
   },
   {
     id: "stats-2",
-    title: "Trusted by Company",
-    value: "230+",
+    title: "Mining & Logistics Sites",
+    value: "45+",
   },
   {
     id: "stats-3",
-    title: "Shipped items",
-    value: "1500+",
+    title: "Cost Reduction",
+    value: "60%",
   },
 ];
 
