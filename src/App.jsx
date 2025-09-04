@@ -1,4 +1,4 @@
-import { Home, Results } from "./components";
+import { Home, Results, HowItWorks, Feedback } from "./components";
 import {
   BrowserRouter,
   Routes, // instead of "Switch"
@@ -10,6 +10,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/feedback" element={<Feedback />} />
           <Route path="/search" element={<Results />} />
         </Routes>
       </BrowserRouter>

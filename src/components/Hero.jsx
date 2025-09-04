@@ -1,28 +1,35 @@
+import React from "react";
 import styles, { layout } from "../style";
-import { discount, robot } from "../assets";
+import { robot } from "../assets";
 import GetStarted from "./GetStarted";
-import Search from "./Search";
-import Counter from "./Counter";
 
-const Hero = () => {
+const Hero = ({ onLaunchDemo }) => {
   return (
-    <section id="home" className={layout.section}>
-      <div className={layout.sectionInfo}>
-
-        {/* gradient start */}
-        <div className="absolute z-[1] w-[10%] h-[35%] top-0 pink__gradient" />
-        <div className="absolute z-[2] w-[10%] h-[1%] rounded-full white__gradient bottom-40" />
-        <div className="absolute z-[1] w-[50%] h-[50%] right-20 bottom-20 blue__gradient" />
-        {/* gradient end */}
-
-        <div className="flex flex-row justify-between">
-          <h1 className="flex-1 font-poppins font-semibold ss:text-[50px] text-[50px] text-white ss:leading-[70.8px] leading-[75px]">
-          Last-mile Delivery Management Software For {" "}
-            <span className="text-gradient">African</span>{" "} Businesses
-          </h1>
+    <section
+      id="home"
+      className={`flex flex-col md:flex-row items-center justify-center bg-primary min-h-screen ${styles.paddingX}`}
+    >
+      {/* Left (Text) Column */}
+      <div className="flex-1 text-left">
+        <h1 className="font-poppins font-semibold text-[40px] md:text-[50px] text-white leading-[1.2]">
+          Delivering Packages, <br className="hidden md:block" />
+          <span className="text-gradient">Made Simple</span>
+        </h1>
+        <p className={`${styles.paragraph} mt-4 text-white max-w-[470px]`}>
+          We help everyday businesses and neighborhoods get your orders where
+          they need to go—fast, safe, and without the hassle.
+        </p>
+        <div className="mt-6">
+          <GetStarted onLaunchDemo={onLaunchDemo} />
         </div>
       </div>
 
+      {/* Right (Image) Column */}
+      <div className={`flex-1 flex ${styles.flexCenter} md:my-0 my-10 relative`}>
+            <img src={robot} alt="Friendly Delivery" className="w-full h-full relative z-[5]" />
+            <div className="absolute z-[1] w-[80%] h-[80%] rounded-full white__gradient bottom-40" />
+            <div className="absolute z-[1] w-[80%] h-[80%] rounded-full white__gradient bottom-40" />
+       </div>
     </section>
   );
 };

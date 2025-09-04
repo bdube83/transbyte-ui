@@ -16,7 +16,7 @@ import { debounce } from 'lodash';
 
 export default function Places({onSelect}) {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyA6HE4QEVGhnXtdSQsu5I3I2jIU_NjREiU", //process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: "", //process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: ["places"],
     region: "ZA",
   });

@@ -2,6 +2,12 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
 
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0B0F29; /* or your bg-primary color */
+}
+
 .font_sans {
   font-family: 'Poppins', sans-serif;
 }
@@ -171,4 +177,69 @@ input[type='number']::-webkit-outer-spin-button {
 
 .text-base {
   font-size: 15px;
+}
+
+.home-bg {
+  background-color: #0B0F29; /* your primary color */
+}
+
+.how-it-works-bg {
+  background-color: #0B0F29; /* a different shade for How It Works */
+}
+
+.feedback-bg {
+  background-color: #333333; /* a dark shade for Feedback */
+}
+
+/* Container around the search bar */
+.leaflet-control-geosearch {
+  background-color: #333 !important;
+  border: 1px solid #555 !important;
+  border-radius: 4px;
+}
+
+
+.leaflet-control-geosearch form {
+  background-color: #333 !important;
+  border: 1px solid #555 !important;
+  border-radius: 4px;
+}
+
+/* The input field */
+.leaflet-control-geosearch input {
+  background-color: #222 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+/* The dropdown results container */
+.leaflet-control-geosearch .results {
+  background-color: #222 !important;
+  border: 1px solid #555 !important;
+  margin-top: 0; /* Remove any gap between the input and dropdown if needed */
+  border-radius: 0 0 4px 4px;
+}
+
+/* Individual result items */
+.leaflet-control-geosearch .results li {
+  color: #fff !important;
+  padding: 6px 8px;
+  cursor: pointer;
+  list-style: none; /* remove default bullet if present */
+}
+
+/* Hover state for result items */
+.leaflet-control-geosearch .results li:hover {
+  background-color: #444 !important;
+  color: #fff !important;
+}
+
+/* Active or selected item */
+.leaflet-control-geosearch .results li.active {
+  background-color: #555 !important;
+  color: #fff !important;
+}
+
+.mapboxgl-ctrl-logo {
+  display: none !important;
 }

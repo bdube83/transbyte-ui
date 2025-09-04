@@ -15,6 +15,19 @@ import Home from "./Home";
 import Results from "./Results";
 import Popup from "./Popup";
 import PopupTwo from "./PopupTwo";
+import BlockchainLog from "./BlockchainLog";
+import RouteAnimation from "./RouteAnimation";
+import LiveDashboard from "./LiveDashboard";
+import LandingPage from "./LandingPage";
+import OrderForm from "./OrderForm";
+import HowItWorks from "./HowItWorks";
+import Feedback from "./Feedback";
+import EarlyAccess from "./EarlyAccess";
+import ChatThinking from "./ChatThinking";
+import DriverScanner from "./DriverScanner";
+import MapView from "./MapView";
+import RadarCircularScanner from "./RadarCircularScanner";
+import MultiFixedDriverScanner from "./MultiFixedDriverScanner";
 
 export {
   Navbar,
@@ -34,4 +47,17 @@ export {
   Results,
   Popup,
   PopupTwo,
+  BlockchainLog,
+  RouteAnimation,
+  LiveDashboard,
+  LandingPage,
+  OrderForm,
+  HowItWorks,
+  Feedback,
+  EarlyAccess,
+  ChatThinking,
+  DriverScanner,
+  MapView,
+  RadarCircularScanner,
+  MultiFixedDriverScanner,
 };

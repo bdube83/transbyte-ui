@@ -1,58 +1,60 @@
-import { useState } from "react";
-
-import { close, logo, menu } from "../assets";
-import { navLinks } from "../constants";
+import React, { useState } from "react";
+import { logo } from "../assets";
+// Optionally install react-icons: npm install react-icons
+import { FaBars, FaTimes } from "react-icons/fa";
 
 const Navbar = () => {
-  const [active, setActive] = useState("Home");
-  const [toggle, setToggle] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <nav className="w-full flex py-6 justify-between items-center navbar">
-      <img src={logo} alt="transbytecourier" className="w-[124px] h-[32px]" />
+    <nav className="w-full flex items-center justify-between p-4 bg-transparent text-white relative">
+      {/* Logo Section */}
+      <div className="flex items-center">
+        <img src={logo} alt="logo" className="w-32 h-auto" />
+      </div>
 
-      <ul className="list-none sm:flex hidden justify-end items-center flex-1">
-        {navLinks.map((nav, index) => (
-          <li
-            key={nav.id}
-            className={`font-poppins font-normal cursor-pointer text-[16px] ${
-              active === nav.title ? "text-white" : "text-dimWhite"
-            } ${index === navLinks.length - 1 ? "mr-0" : "mr-10"}`}
-            onClick={() => setActive(nav.title)}
-          >
-            <a href={`#${nav.id}`}>{nav.title}</a>
-          </li>
-        ))}
+      {/* Desktop Links */}
+      <ul className="hidden md:flex space-x-6 font-poppins">
+        <li className="hover:text-gray-300">
+          <a href="#demo">Demo</a>
+        </li>
+        <li className="hover:text-gray-300">
+          <a href="#early-access">Sign Up</a>
+        </li>
+        <li className="hover:text-gray-300">
+          <a href="#how-it-works">How It Works</a>
+        </li>
+        <li className="hover:text-gray-300">
+          <a href="#contact-us">Contact Us</a>
+        </li>
       </ul>
 
-      <div className="sm:hidden flex flex-1 justify-end items-center">
-        <img
-          src={toggle ? close : menu}
-          alt="menu"
-          className="w-[28px] h-[28px] object-contain"
-          onClick={() => setToggle(!toggle)}
-        />
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleMenu}
+        className="md:hidden text-white focus:outline-none"
+      >
+        {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
 
-        <div
-          className={`${
-            !toggle ? "hidden" : "flex"
-          } p-6 bg-black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] rounded-xl sidebar`}
-        >
-          <ul className="list-none flex justify-end items-start flex-1 flex-col">
-            {navLinks.map((nav, index) => (
-              <li
-                key={nav.id}
-                className={`font-poppins font-medium cursor-pointer text-[16px] ${
-                  active === nav.title ? "text-white" : "text-dimWhite"
-                } ${index === navLinks.length - 1 ? "mb-0" : "mb-4"}`}
-                onClick={() => setActive(nav.title)}
-              >
-                <a href={`#${nav.id}`}>{nav.title}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      {/* Mobile Dropdown */}
+      {isOpen && (
+        <ul className="absolute top-[60px] right-4 bg-gray-800 p-4 rounded-md md:hidden space-y-4">
+          <li className="hover:text-gray-300">
+            <a href="#demo" onClick={toggleMenu}>Demo</a>
+          </li>
+          <li className="hover:text-gray-300">
+            <a href="#how-it-works" onClick={toggleMenu}>How It Works</a>
+          </li>
+          <li className="hover:text-gray-300">
+            <a href="#contact-us" onClick={toggleMenu}>Contact Us</a>
+          </li>
+        </ul>
+      )}
     </nav>
   );
 };
