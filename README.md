@@ -20,11 +20,4 @@ npm run dev
 ```
 
 ## Instructions to deploy UI
-1. Build app
-```
-npm run build
-```
-2. Deploy app to Hostinger
-```
-https://hpanel.hostinger.com/hosting/edgeboxafrica.com?hj=true
-```
+1. Auto deploys once you merge to main

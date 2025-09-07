@@ -1,37 +1,98 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "../style";
 
 const EarlyAccess = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const turnstileRef = useRef(null);
+  const widgetId = useRef(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Prepare email data for EdgeBox pilot program
-    const emailData = {
-      to: "support@edgebox.africa",
-      subject: "EdgeBox Pilot Program - New Registration",
-      body: `New pilot program registration:
-      
-Name: ${name}
-Email: ${email}
-Date: ${new Date().toLocaleDateString()}
+  // Use demo site key if environment variable is not set
+  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
 
-Please follow up for site assessment and deployment planning.`
+  useEffect(() => {
+    // Initialize Turnstile when the script is loaded
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileRef.current && !widgetId.current) {
+        widgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: siteKey,
+          callback: (token) => {
+            setTurnstileToken(token);
+          },
+          "error-callback": () => {
+            console.error("Turnstile error");
+            setTurnstileToken(null);
+          },
+          "expired-callback": () => {
+            console.log("Turnstile expired");
+            setTurnstileToken(null);
+          },
+        });
+      }
     };
-    
-    // For now, log the data (replace with actual email service integration)
-    console.log("EdgeBox Pilot Program Registration:", emailData);
-    
-    // TODO: Integrate with email service (e.g., EmailJS, SendGrid, etc.)
-    // Example: emailjs.send('service_id', 'template_id', emailData)
-    
-    alert("Thank you for joining our pilot program! We'll contact you soon for a site assessment.");
-    
-    // Clear the form after submission
-    setName("");
-    setEmail("");
+
+    // Check if Turnstile is already loaded
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      // Wait for the script to load
+      const checkTurnstile = setInterval(() => {
+        if (window.turnstile) {
+          clearInterval(checkTurnstile);
+          initializeTurnstile();
+        }
+      }, 100);
+
+      // Clean up interval after 10 seconds
+      setTimeout(() => clearInterval(checkTurnstile), 10000);
+    }
+
+    // Cleanup function
+    return () => {
+      if (window.turnstile && widgetId.current) {
+        try {
+          window.turnstile.remove(widgetId.current);
+        } catch (e) {
+          console.log("Error removing turnstile widget:", e);
+        }
+        widgetId.current = null;
+      }
+    };
+  }, [siteKey]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check if we have a turnstile token
+    if (!turnstileToken) {
+      alert("Please complete the CAPTCHA.");
+      return;
+    }
+
+    try {
+      const resp = await fetch("https://api.edgebox.africa/early-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, "cf-turnstile-response": turnstileToken }),
+      });
+
+      const result = await resp.json();
+      if (result.success) {
+        alert("Thanks for joining our pilot program! We'll contact you soon.");
+        setName("");
+        setEmail("");
+        // Reset the CAPTCHA
+        if (window.turnstile && widgetId.current) {
+          window.turnstile.reset(widgetId.current);
+          setTurnstileToken(null);
+        }
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      alert("Error submitting form. Try again later.");
+    }
   };
 
   return (
@@ -66,6 +127,13 @@ Please follow up for site assessment and deployment planning.`
             required
             className="p-3 rounded w-full sm:w-auto text-black border border-gray-300"
           />
+
+          {/* Turnstile Widget */}
+          <div
+            ref={turnstileRef}
+            className="cf-turnstile flex justify-center"
+          ></div>
+
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-3 rounded"

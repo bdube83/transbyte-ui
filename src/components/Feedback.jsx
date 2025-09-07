@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles, { layout } from "../style";
 
 const Feedback = () => {
@@ -11,48 +11,106 @@ const Feedback = () => {
     additionalInfo: "",
   });
 
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const turnstileRef = useRef(null);
+  const widgetId = useRef(null);
+
+  // Use environment variable with fallback to demo key
+  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
+
+  useEffect(() => {
+    // Initialize Turnstile when the script is loaded
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileRef.current && !widgetId.current) {
+        widgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: siteKey,
+          callback: (token) => {
+            setTurnstileToken(token);
+          },
+          "error-callback": () => {
+            console.error("Turnstile error");
+            setTurnstileToken(null);
+          },
+          "expired-callback": () => {
+            console.log("Turnstile expired");
+            setTurnstileToken(null);
+          },
+        });
+      }
+    };
+
+    // Check if Turnstile is already loaded
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      // Wait for the script to load
+      const checkTurnstile = setInterval(() => {
+        if (window.turnstile) {
+          clearInterval(checkTurnstile);
+          initializeTurnstile();
+        }
+      }, 100);
+
+      // Clean up interval after 10 seconds
+      setTimeout(() => clearInterval(checkTurnstile), 10000);
+    }
+
+    // Cleanup function
+    return () => {
+      if (window.turnstile && widgetId.current) {
+        try {
+          window.turnstile.remove(widgetId.current);
+        } catch (e) {
+          console.log("Error removing turnstile widget:", e);
+        }
+        widgetId.current = null;
+      }
+    };
+  }, [siteKey]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Prepare email data for EdgeBox contact form
-    const emailData = {
-      to: "support@edgebox.africa",
-      subject: "EdgeBox Contact Form - New Inquiry",
-      body: `New contact form submission:
-      
-Name: ${formData.fullName}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Company: ${formData.companyName}
-Job Title: ${formData.jobTitle}
-Additional Info: ${formData.additionalInfo}
-Date: ${new Date().toLocaleDateString()}
 
-Please follow up with this prospect regarding EdgeBox solutions.`
-    };
-    
-    // For now, log the data (replace with actual email service integration)
-    console.log("EdgeBox Contact Form:", emailData);
-    
-    // TODO: Integrate with email service (e.g., EmailJS, SendGrid, etc.)
-    // Example: emailjs.send('service_id', 'template_id', emailData)
-    
-    alert("Thank you for contacting us! We'll get back to you within 24 hours to discuss your edge computing needs.");
+    // Check if we have a turnstile token
+    if (!turnstileToken) {
+      alert("Please complete the CAPTCHA.");
+      return;
+    }
 
-    // Clear the form or show a success message
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      companyName: "",
-      jobTitle: "",
-      additionalInfo: "",
-    });
+    try {
+      const resp = await fetch("https://api.edgebox.africa/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, "cf-turnstile-response": turnstileToken }),
+      });
+
+      const result = await resp.json();
+      if (result.success) {
+        alert("Thank you for contacting us! We'll get back to you soon.");
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          companyName: "",
+          jobTitle: "",
+          additionalInfo: "",
+        });
+        // Reset the CAPTCHA
+        if (window.turnstile && widgetId.current) {
+          window.turnstile.reset(widgetId.current);
+          setTurnstileToken(null);
+        }
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      alert("Error submitting form. Try again later.");
+    }
   };
 
   return (
@@ -62,7 +120,7 @@ Please follow up with this prospect regarding EdgeBox solutions.`
     >
       <div className={`${styles.boxWidth} bg-[#1C1C1C] p-8 rounded-lg shadow-md w-full max-w-[600px]`}>
         <h2 className={`${styles.heading2} text-center mb-6`}>Talk To Our Team</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Full Name */}
           <div>
@@ -161,6 +219,12 @@ Please follow up with this prospect regarding EdgeBox solutions.`
               className="w-full rounded-md border border-gray-300 p-3 text-black"
             />
           </div>
+
+          {/* Turnstile Widget */}
+          <div
+            ref={turnstileRef}
+            className="cf-turnstile flex justify-center"
+          ></div>
 
           {/* Submit Button */}
           <button
