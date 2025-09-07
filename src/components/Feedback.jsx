@@ -226,13 +226,47 @@ const Feedback = () => {
             className="cf-turnstile flex justify-center"
           ></div>
 
+          {/* Privacy Microcopy */}
+          <div className="text-xs text-gray-400 text-center">
+            <p className="mb-2">
+              🔒 Your info is encrypted and only used to contact you. Protected by Cloudflare.
+            </p>
+            <p>
+              By submitting, you agree to our{" "}
+              <button 
+                type="button"
+                onClick={() => alert("Privacy Policy: We collect only essential information to respond to your inquiry. Your data is encrypted, never sold, and you can request deletion anytime by emailing support@edgebox.africa")}
+                className="text-blue-400 hover:text-blue-300 underline"
+              >
+                Privacy Policy
+              </button>
+            </p>
+          </div>
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 rounded-md"
+            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 rounded-md transition-colors"
           >
-            Submit
+            Send Message
           </button>
+
+          {/* Contact Information */}
+          <div className="text-xs text-gray-400 text-center mt-4 pt-4 border-t border-gray-600">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              <div>
+                <p className="font-semibold text-gray-300">Contact Us Directly</p>
+                <p>📧 support@edgebox.africa</p>
+                <p>💬 WhatsApp: +27 767 813 100</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-300">EdgeBox Technologies</p>
+                <p>🌐 edgebox.africa</p>
+                <p>📍 Cape Town, Milnerton, 7441, South Africa</p>
+              </div>
+            </div>
+            <p className="text-center">Rugged Edge Computing Solutions</p>
+          </div>
         </form>
       </div>
     </section>
