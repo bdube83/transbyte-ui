@@ -1,4 +1,4 @@
-import { Home, Results, HowItWorks, Feedback } from "./components";
+import { Home, Results, HowItWorks, Feedback, PrivacyPolicy } from "./components";
 import {
   BrowserRouter,
   Routes, // instead of "Switch"
@@ -13,6 +13,7 @@ function App() {
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/search" element={<Results />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
       </BrowserRouter>
   );

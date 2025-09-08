@@ -24,6 +24,7 @@ import OrderForm from "./OrderForm";
 import HowItWorks from "./HowItWorks";
 import Feedback from "./Feedback";
 import EarlyAccess from "./EarlyAccess";
+import PrivacyPolicy from "./PrivacyPolicy";
 import ChatThinking from "./ChatThinking";
 import DriverScanner from "./DriverScanner";
 import MapView from "./MapView";
@@ -57,6 +58,7 @@ export {
   HowItWorks,
   Feedback,
   EarlyAccess,
+  PrivacyPolicy,
   ChatThinking,
   DriverScanner,
   MapView,

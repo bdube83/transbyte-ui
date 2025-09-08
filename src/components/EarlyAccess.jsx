@@ -186,13 +186,14 @@ const EarlyAccess = () => {
             <p className="flex items-center justify-center gap-2 mb-1">
               <span className="text-green-400">🔒</span>
               Protected by Cloudflare • 
-              <button 
-                type="button"
-                onClick={() => alert("Privacy Policy: We collect only essential information to contact you about EdgeBox services. Your data is encrypted, never sold, and you can request deletion anytime by emailing support@edgebox.africa")}
+              <a 
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 underline"
               >
                 Privacy Policy
-              </button>
+              </a>
             </p>
           </div>
         </form>

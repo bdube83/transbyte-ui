@@ -285,13 +285,14 @@ const Feedback = () => {
             </p>
             <p>
               By submitting, you agree to our{" "}
-              <button 
-                type="button"
-                onClick={() => alert("Privacy Policy: We collect only essential information to respond to your inquiry. Your data is encrypted, never sold, and you can request deletion anytime by emailing support@edgebox.africa")}
+              <a 
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 underline"
               >
                 Privacy Policy
-              </button>
+              </a>
             </p>
           </div>
 
