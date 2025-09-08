@@ -20,7 +20,7 @@ function LandingPage({ onOrderPlaced }) {
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
           onClick={handleClick}
         >
-          Request Demo & Site Assessment
+          Request Live Demo & Site Assessment
         </button>
       </div>
     </div>

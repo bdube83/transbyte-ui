@@ -14,7 +14,7 @@ const Search = ({ onLaunchDemo }) => {
           onClick={handleContactUs}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Request Demo
+          Request Live Demo
         </button>
       </div>
     </div>

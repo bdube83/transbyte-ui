@@ -66,7 +66,7 @@ const HowItWorks = ({ onLaunchDemo }) => {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded"
             onClick={handleContactUs}
           >
-            Request Demo
+            Request Live Demo
           </button>
         </div>
       </div>

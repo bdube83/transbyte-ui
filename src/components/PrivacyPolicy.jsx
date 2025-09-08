@@ -177,7 +177,6 @@ const PrivacyPolicy = () => {
                 <p><strong>EdgeBox Technologies</strong></p>
                 <p>📧 General: <a href="mailto:support@edgebox.africa" className="text-blue-400 hover:text-blue-300 underline">support@edgebox.africa</a></p>
                 <p>🌐 Website: <a href="https://edgebox.africa" className="text-blue-400 hover:text-blue-300 underline">edgebox.africa</a></p>
-                <p>📍 Location: South Africa</p>
               </div>
             </div>
           </div>
