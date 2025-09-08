@@ -8,6 +8,7 @@ import Stats from "./Stats";
 import Footer from "./Footer";
 import Testimonials from "./Testimonials";
 import Hero from "./Hero";
+import CalendlyButton from "./CalendlyButton";
 import Places from "./Places";
 import PlacesTo from "./PlacesTo";
 import Counter from "./Counter";
@@ -40,6 +41,7 @@ export {
   Footer,
   Testimonials,
   Hero,
+  CalendlyButton,
   Places,
   PlacesTo,
   Counter,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles, { layout } from "../style";
+import CalendlyButton from "./CalendlyButton";
 
 const Feedback = () => {
   const [formData, setFormData] = useState({
@@ -119,7 +120,30 @@ const Feedback = () => {
       id="contact-us"
     >
       <div className={`${styles.boxWidth} bg-[#1C1C1C] p-8 rounded-lg shadow-md w-full max-w-[600px]`}>
-        <h2 className={`${styles.heading2} text-center mb-6`}>Talk To Our Team</h2>
+        <div className="text-center mb-6">
+          <h2 className={`${styles.heading2} mb-4`}>Talk To Our Team</h2>
+          <p className="text-gray-400 mb-4">Get in touch with us through the form below or schedule a direct meeting.</p>
+          
+          {/* Alternative Contact Options */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+            <CalendlyButton 
+              text="Schedule 30min Meeting" 
+              variant="primary"
+              size="medium"
+            />
+            <CalendlyButton 
+              text="Quick Call" 
+              variant="outline"
+              size="medium"
+            />
+          </div>
+          
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 h-px bg-gray-600"></div>
+            <span className="text-gray-400 text-sm">or fill out the form</span>
+            <div className="flex-1 h-px bg-gray-600"></div>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Full Name */}

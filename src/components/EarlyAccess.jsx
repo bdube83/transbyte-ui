@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "../style";
+import CalendlyButton from "./CalendlyButton";
 
 const EarlyAccess = () => {
   const [name, setName] = useState("");
@@ -151,18 +152,15 @@ const EarlyAccess = () => {
             Join Free Pilot Program
           </button>
 
-          {/* Privacy Microcopy */}
-          <div className="text-xs text-gray-400 text-center space-y-2">
-            <p className="flex items-center justify-center gap-2">
+          {/* Compact Privacy Info */}
+          <div className="text-xs text-gray-400 text-center">
+            <p className="flex items-center justify-center gap-2 mb-1">
               <span className="text-green-400">🔒</span>
-              Your info is encrypted and only used to contact you. Protected by Cloudflare.
-            </p>
-            <p>
-              By signing up, you agree to our{" "}
+              Protected by Cloudflare • 
               <button 
                 type="button"
                 onClick={() => alert("Privacy Policy: We collect only essential information to contact you about EdgeBox services. Your data is encrypted, never sold, and you can request deletion anytime by emailing support@edgebox.africa")}
-                className="text-blue-400 hover:text-blue-300 underline transition-colors"
+                className="text-blue-400 hover:text-blue-300 underline"
               >
                 Privacy Policy
               </button>
@@ -170,20 +168,24 @@ const EarlyAccess = () => {
           </div>
         </form>
 
-        {/* Contact Information - Separate from form */}
-        <div className="mt-8 pt-6 border-t border-gray-700 max-w-md mx-auto">
-          <div className="text-center space-y-2">
-            <p className="font-semibold text-gray-300 text-sm">EdgeBox Technologies</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-xs text-gray-400">
-              <span className="flex items-center gap-1">
-                📧 support@edgebox.africa
-              </span>
-              <span className="hidden sm:block">•</span>
-              <span className="flex items-center gap-1">
-                🌐 edgebox.africa
-              </span>
+        {/* Simplified Additional Options */}
+        <div className="mt-6 pt-4 border-t border-gray-700 max-w-md mx-auto text-center">
+          <p className="text-sm text-gray-300 mb-3">Prefer to talk first?</p>
+          
+          <CalendlyButton 
+            text="Schedule 15min Call" 
+            variant="outline"
+            size="small"
+            className="mb-4"
+          />
+          
+          {/* Compact Contact Info */}
+          <div className="text-xs text-gray-500 space-y-1">
+            <p><strong>EdgeBox Technologies</strong></p>
+            <div className="flex justify-center items-center gap-3">
+              <span>📧 support@edgebox.africa</span>
+              <span>🌐 edgebox.africa</span>
             </div>
-            <p className="text-xs text-gray-500 italic">Rugged Edge Computing Solutions</p>
           </div>
         </div>
       </div>
