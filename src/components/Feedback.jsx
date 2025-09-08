@@ -11,8 +11,9 @@ const Feedback = () => {
     jobTitle: "",
     additionalInfo: "",
   });
-
+  
   const [turnstileToken, setTurnstileToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const turnstileRef = useRef(null);
   const widgetId = useRef(null);
 
@@ -77,11 +78,16 @@ const Feedback = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Prevent duplicate submissions
+    if (isLoading) return;
+
     // Check if we have a turnstile token
     if (!turnstileToken) {
       alert("Please complete the CAPTCHA.");
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const resp = await fetch("https://api.edgebox.africa/contact", {
@@ -111,6 +117,8 @@ const Feedback = () => {
       }
     } catch (err) {
       alert("Error submitting form. Try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -145,7 +153,7 @@ const Feedback = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className={`space-y-5 ${isLoading ? 'pointer-events-none' : ''}`}>
           {/* Full Name */}
           <div>
             <label className="block mb-1 font-medium text-white" htmlFor="fullName">
@@ -159,7 +167,10 @@ const Feedback = () => {
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="w-full rounded-md border border-gray-300 p-3 text-black"
+              disabled={isLoading}
+              className={`w-full rounded-md border border-gray-300 p-3 text-black transition-opacity ${
+                isLoading ? 'opacity-50' : ''
+              }`}
             />
           </div>
 
@@ -176,7 +187,10 @@ const Feedback = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full rounded-md border border-gray-300 p-3 text-black"
+              disabled={isLoading}
+              className={`w-full rounded-md border border-gray-300 p-3 text-black transition-opacity ${
+                isLoading ? 'opacity-50' : ''
+              }`}
             />
           </div>
 
@@ -192,7 +206,10 @@ const Feedback = () => {
               placeholder="+1 234 567 8900"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full rounded-md border border-gray-300 p-3 text-black"
+              disabled={isLoading}
+              className={`w-full rounded-md border border-gray-300 p-3 text-black transition-opacity ${
+                isLoading ? 'opacity-50' : ''
+              }`}
             />
           </div>
 
@@ -208,7 +225,10 @@ const Feedback = () => {
               placeholder="Your Company"
               value={formData.companyName}
               onChange={handleChange}
-              className="w-full rounded-md border border-gray-300 p-3 text-black"
+              disabled={isLoading}
+              className={`w-full rounded-md border border-gray-300 p-3 text-black transition-opacity ${
+                isLoading ? 'opacity-50' : ''
+              }`}
             />
           </div>
 
@@ -224,7 +244,10 @@ const Feedback = () => {
               placeholder="e.g. Manager, Developer"
               value={formData.jobTitle}
               onChange={handleChange}
-              className="w-full rounded-md border border-gray-300 p-3 text-black"
+              disabled={isLoading}
+              className={`w-full rounded-md border border-gray-300 p-3 text-black transition-opacity ${
+                isLoading ? 'opacity-50' : ''
+              }`}
             />
           </div>
 
@@ -240,15 +263,20 @@ const Feedback = () => {
               rows={3}
               value={formData.additionalInfo}
               onChange={handleChange}
-              className="w-full rounded-md border border-gray-300 p-3 text-black"
+              disabled={isLoading}
+              className={`w-full rounded-md border border-gray-300 p-3 text-black transition-opacity ${
+                isLoading ? 'opacity-50' : ''
+              }`}
             />
           </div>
 
           {/* Turnstile Widget */}
-          <div
-            ref={turnstileRef}
-            className="cf-turnstile flex justify-center"
-          ></div>
+          <div className={`flex justify-center ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div
+              ref={turnstileRef}
+              className="cf-turnstile"
+            ></div>
+          </div>
 
           {/* Privacy Microcopy */}
           <div className="text-xs text-gray-400 text-center">
@@ -270,9 +298,24 @@ const Feedback = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 rounded-md transition-colors"
+            disabled={isLoading}
+            className={`w-full font-bold py-3 rounded-md transition-colors ${
+              isLoading
+                ? 'bg-gray-500 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-700'
+            } text-white`}
           >
-            Send Message
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending...
+              </span>
+            ) : (
+              'Send Message'
+            )}
           </button>
 
           {/* Contact Information */}

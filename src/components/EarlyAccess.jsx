@@ -6,6 +6,7 @@ const EarlyAccess = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [turnstileToken, setTurnstileToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const turnstileRef = useRef(null);
   const widgetId = useRef(null);
 
@@ -65,11 +66,16 @@ const EarlyAccess = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Prevent duplicate submissions
+    if (isLoading) return;
+
     // Check if we have a turnstile token
     if (!turnstileToken) {
       alert("Please complete the CAPTCHA.");
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const resp = await fetch("https://api.edgebox.africa/early-access", {
@@ -93,6 +99,8 @@ const EarlyAccess = () => {
       }
     } catch (err) {
       alert("Error submitting form. Try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -121,7 +129,10 @@ const EarlyAccess = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full p-4 rounded-lg text-black border border-gray-300 focus:border-blue-500 focus:outline-none transition-colors"
+                disabled={isLoading}
+                className={`w-full p-4 rounded-lg text-black border border-gray-300 focus:border-blue-500 focus:outline-none transition-colors ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               />
             </div>
             <div>
@@ -131,13 +142,16 @@ const EarlyAccess = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full p-4 rounded-lg text-black border border-gray-300 focus:border-blue-500 focus:outline-none transition-colors"
+                disabled={isLoading}
+                className={`w-full p-4 rounded-lg text-black border border-gray-300 focus:border-blue-500 focus:outline-none transition-colors ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               />
             </div>
           </div>
 
           {/* Turnstile Widget */}
-          <div className="flex justify-center py-4">
+          <div className={`flex justify-center py-4 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
             <div
               ref={turnstileRef}
               className="cf-turnstile"
@@ -147,9 +161,24 @@ const EarlyAccess = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-lg hover:shadow-xl"
+            disabled={isLoading}
+            className={`w-full font-bold py-4 px-6 rounded-lg transition-colors shadow-lg ${
+              isLoading
+                ? 'bg-gray-500 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600 hover:shadow-xl'
+            } text-white`}
           >
-            Join Free Pilot Program
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            ) : (
+              'Join Free Pilot Program'
+            )}
           </button>
 
           {/* Compact Privacy Info */}
