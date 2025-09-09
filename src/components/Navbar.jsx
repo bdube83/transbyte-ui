@@ -32,6 +32,12 @@ const Navbar = () => {
           <a href="#about">About</a>
         </li>
         <li className="hover:text-gray-300">
+          <a href="/partners">Partners</a>
+        </li>
+        <li className="hover:text-gray-300">
+          <a href="/blog">Blog</a>
+        </li>
+        <li className="hover:text-gray-300">
           <a href="#contact-us">Contact Us</a>
         </li>
       </ul>
@@ -58,6 +64,12 @@ const Navbar = () => {
           </li>
           <li className="hover:text-gray-300">
             <a href="#about" onClick={toggleMenu}>About</a>
+          </li>
+          <li className="hover:text-gray-300">
+            <a href="/partners" onClick={toggleMenu}>Partners</a>
+          </li>
+          <li className="hover:text-gray-300">
+            <a href="/blog" onClick={toggleMenu}>Blog</a>
           </li>
           <li className="hover:text-gray-300">
             <a href="#contact-us" onClick={toggleMenu}>Contact Us</a>

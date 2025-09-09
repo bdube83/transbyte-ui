@@ -33,9 +33,12 @@ const HowItWorks = ({ onLaunchDemo }) => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             How EdgeBox Works
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-gray-400 max-w-2xl mx-auto mb-4">
             Deploy rugged edge AI that works offline-first, processes data locally, and syncs intelligently to the cloud
           </p>
+          <div className="inline-flex items-center px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-300 text-sm">
+            💡 Prototype under development • Performance estimates based on testing
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">

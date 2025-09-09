@@ -9,6 +9,7 @@ import HowItWorks from "./HowItWorks";
 import Feedback from "./Feedback";
 import EarlyAccess from "./EarlyAccess";
 import FounderSection from "./FounderSection";
+import SocialProof from "./SocialProof";
 
 const Home = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -72,6 +73,13 @@ const Home = () => {
       <div className={`${styles.flexStart}`}>
         <div className={`${styles.boxWidth}`}>
           <FounderSection />
+        </div>
+      </div>
+
+      {/* Social Proof Section */}
+      <div className={`${styles.flexStart}`}>
+        <div className={`${styles.boxWidth}`}>
+          <SocialProof />
         </div>
       </div>
 

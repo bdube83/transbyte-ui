@@ -27,6 +27,14 @@ import EarlyAccess from "./EarlyAccess";
 import PrivacyPolicy from "./PrivacyPolicy";
 import FounderSection from "./FounderSection";
 import ChatThinking from "./ChatThinking";
+import TermsOfService from "./TermsOfService";
+import CookieBanner from "./CookieBanner";
+import PilotProgram from "./PilotProgram";
+import BlogPost from "./BlogPost";
+import Blog from "./Blog";
+import BlogPage from "./BlogPage";
+import Partners from "./Partners";
+import SocialProof from "./SocialProof";
 import DriverScanner from "./DriverScanner";
 import MapView from "./MapView";
 import RadarCircularScanner from "./RadarCircularScanner";
@@ -62,6 +70,14 @@ export {
   PrivacyPolicy,
   FounderSection,
   ChatThinking,
+  TermsOfService,
+  CookieBanner,
+  PilotProgram,
+  BlogPost,
+  Blog,
+  BlogPage,
+  Partners,
+  SocialProof,
   DriverScanner,
   MapView,
   RadarCircularScanner,

@@ -52,6 +52,30 @@ const Footer = () => (
             Privacy Policy
           </a>
           <a 
+            href="/terms-of-service"
+            className="text-gray-400 hover:text-white transition-colors underline"
+          >
+            Terms of Service
+          </a>
+          <a 
+            href="/pilot-program"
+            className="text-gray-400 hover:text-white transition-colors underline"
+          >
+            Pilot Program
+          </a>
+          <a 
+            href="/partners"
+            className="text-gray-400 hover:text-white transition-colors underline"
+          >
+            Partners
+          </a>
+          <a 
+            href="/blog"
+            className="text-gray-400 hover:text-white transition-colors underline"
+          >
+            Blog
+          </a>
+          <a 
             href="mailto:support@edgebox.africa"
             className="text-gray-400 hover:text-white transition-colors"
           >
