@@ -1,7 +1,7 @@
 import React from "react";
 
 const CalendlyButton = ({ 
-  text = "Schedule time with me", 
+  text = "Schedule time with Bongani", 
   variant = "primary",
   size = "medium",
   className = "" 

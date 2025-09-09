@@ -243,3 +243,9 @@ input[type='number']::-webkit-outer-spin-button {
 .mapboxgl-ctrl-logo {
   display: none !important;
 }
+
+.border-gradient {
+  border: 4px solid;
+  border-image: linear-gradient(45deg, #3b82f6, #06b6d4, #3b82f6) 1;
+  border-radius: 50%;
+}

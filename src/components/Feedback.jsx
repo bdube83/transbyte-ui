@@ -130,17 +130,17 @@ const Feedback = () => {
       <div className={`${styles.boxWidth} bg-[#1C1C1C] p-8 rounded-lg shadow-md w-full max-w-[600px]`}>
         <div className="text-center mb-6">
           <h2 className={`${styles.heading2} mb-4`}>Talk To Our Team</h2>
-          <p className="text-gray-400 mb-4">Get in touch with us through the form below or schedule a direct meeting.</p>
+          <p className="text-gray-400 mb-4">Get in touch with us through the form below or schedule a direct meeting with our founder.</p>
           
           {/* Alternative Contact Options */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
             <CalendlyButton 
-              text="Schedule 30min Meeting" 
+              text="Meet with Bongani" 
               variant="primary"
               size="medium"
             />
             <CalendlyButton 
-              text="Quick Call" 
+              text="Quick Call with Founder" 
               variant="outline"
               size="medium"
             />

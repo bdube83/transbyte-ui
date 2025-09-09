@@ -20,13 +20,16 @@ const Navbar = () => {
       {/* Desktop Links */}
       <ul className="hidden md:flex space-x-6 font-poppins">
         <li className="hover:text-gray-300">
+          <a href="#how-it-works">How It Works</a>
+        </li>
+        <li className="hover:text-gray-300">
           <a href="#demo">Demo</a>
         </li>
         <li className="hover:text-gray-300">
           <a href="#early-access">Sign Up</a>
         </li>
         <li className="hover:text-gray-300">
-          <a href="#how-it-works">How It Works</a>
+          <a href="#about">About</a>
         </li>
         <li className="hover:text-gray-300">
           <a href="#contact-us">Contact Us</a>
@@ -45,10 +48,16 @@ const Navbar = () => {
       {isOpen && (
         <ul className="absolute top-[60px] right-4 bg-gray-800 p-4 rounded-md md:hidden space-y-4">
           <li className="hover:text-gray-300">
+            <a href="#how-it-works" onClick={toggleMenu}>How It Works</a>
+          </li>
+          <li className="hover:text-gray-300">
             <a href="#demo" onClick={toggleMenu}>Demo</a>
           </li>
           <li className="hover:text-gray-300">
-            <a href="#how-it-works" onClick={toggleMenu}>How It Works</a>
+            <a href="#early-access" onClick={toggleMenu}>Sign Up</a>
+          </li>
+          <li className="hover:text-gray-300">
+            <a href="#about" onClick={toggleMenu}>About</a>
           </li>
           <li className="hover:text-gray-300">
             <a href="#contact-us" onClick={toggleMenu}>Contact Us</a>

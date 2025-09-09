@@ -111,7 +111,7 @@ const EarlyAccess = () => {
     >
       <div className="max-w-3xl w-full text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Join Our Pilot Program
+          Sign Up
         </h2>
         <p className="mb-6 text-gray-300">
           Sign up now for a free site assessment and be among the first to deploy EdgeBox at your location!
@@ -200,10 +200,10 @@ const EarlyAccess = () => {
 
         {/* Simplified Additional Options */}
         <div className="mt-6 pt-4 border-t border-gray-700 max-w-md mx-auto text-center">
-          <p className="text-sm text-gray-300 mb-3">Prefer to talk first?</p>
+          <p className="text-sm text-gray-300 mb-3">Want to speak with our founder first?</p>
           
           <CalendlyButton 
-            text="Schedule 15min Call" 
+            text="Talk to Bongani" 
             variant="outline"
             size="small"
             className="mb-4"

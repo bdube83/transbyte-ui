@@ -8,6 +8,7 @@ import Footer from "./Footer";
 import HowItWorks from "./HowItWorks";
 import Feedback from "./Feedback";
 import EarlyAccess from "./EarlyAccess";
+import FounderSection from "./FounderSection";
 
 const Home = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -45,12 +46,13 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Business Section */}
-      <div className={`feedback-bg ${styles.flexStart}`}>
+      {/* How It Works Section */}
+      <div className={`how-it-works-bg ${styles.flexStart}`}>
         <div className={`${styles.boxWidth}`}>
-          <Business onLaunchDemo={handleLaunchDemoFromBusiness} />
+          <HowItWorks onLaunchDemo={handleLaunchDemoFromBusiness}/>
         </div>
       </div>
+
 
       {/* Early Access Sign-Up Section */}
       <div className={`${styles.flexStart}`}>
@@ -59,10 +61,17 @@ const Home = () => {
         </div>
       </div>
 
-      {/* How It Works Section */}
-      <div className={`how-it-works-bg ${styles.flexStart}`}>
+      {/* Business Section */}
+      <div className={`feedback-bg ${styles.flexStart}`}>
         <div className={`${styles.boxWidth}`}>
-          <HowItWorks onLaunchDemo={handleLaunchDemoFromBusiness}/>
+          <Business onLaunchDemo={handleLaunchDemoFromBusiness} />
+        </div>
+      </div>
+
+      {/* Founder Section */}
+      <div className={`${styles.flexStart}`}>
+        <div className={`${styles.boxWidth}`}>
+          <FounderSection />
         </div>
       </div>
 

@@ -25,6 +25,7 @@ import HowItWorks from "./HowItWorks";
 import Feedback from "./Feedback";
 import EarlyAccess from "./EarlyAccess";
 import PrivacyPolicy from "./PrivacyPolicy";
+import FounderSection from "./FounderSection";
 import ChatThinking from "./ChatThinking";
 import DriverScanner from "./DriverScanner";
 import MapView from "./MapView";
@@ -59,6 +60,7 @@ export {
   Feedback,
   EarlyAccess,
   PrivacyPolicy,
+  FounderSection,
   ChatThinking,
   DriverScanner,
   MapView,

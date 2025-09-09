@@ -21,6 +21,8 @@ import instagram from "./instagram.svg";
 import linkedin from "./linkedin.svg";
 import twitter from "./twitter.svg";
 import women_package from "./women_package.png";
+import edgeboxDevice from "./edgebox-device.png";
+import founderBongani from "./founder-bongani.jpg";
 
 export {
   airbnb,
@@ -46,4 +48,6 @@ export {
   linkedin,
   twitter,
   women_package,
+  edgeboxDevice,
+  founderBongani,
 };
