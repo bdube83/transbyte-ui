@@ -10,7 +10,7 @@ const HowItWorks = ({ onLaunchDemo }) => {
   const steps = [
     {
       title: "Deploy EdgeBox",
-      description: "Install our IP-54 sealed, rugged aluminum device (280×200×120mm) at your site with minimal setup"
+      description: "Install our Edgebox One device at your site with minimal setup"
     },
     {
       title: "Ingest Data",
