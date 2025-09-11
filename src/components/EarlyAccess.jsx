@@ -203,7 +203,7 @@ const EarlyAccess = () => {
           <p className="text-sm text-gray-300 mb-3">Want to speak with our founder first?</p>
           
           <CalendlyButton 
-            text="Talk to Bongani" 
+            text="Talk to our founder" 
             variant="outline"
             size="small"
             className="mb-4"
