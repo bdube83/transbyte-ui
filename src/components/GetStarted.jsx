@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../style";
 import { arrowUp } from "../assets";
 
-const GetStarted = ({ onLaunchDemo }) => {
+const GetStarted = () => {
   const handleContactUs = () => {
     window.location.href = "#contact-us";
   };

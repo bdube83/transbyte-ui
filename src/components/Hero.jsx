@@ -20,7 +20,7 @@ const Hero = ({ onLaunchDemo }) => {
           Reduce costs, improve uptime, and enable local AI processing in challenging environments.
         </p>
         <div className="mt-6">
-          <GetStarted onLaunchDemo={onLaunchDemo} />
+          <GetStarted />
         </div>
       </div>
 

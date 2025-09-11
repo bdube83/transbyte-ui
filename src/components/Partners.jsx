@@ -15,7 +15,6 @@ const Partners = () => {
     { name: "Innovation Hub", category: "advisor", placeholder: "IH" },
     { name: "CSIR", category: "research", placeholder: "CSIR" },
     { name: "UCT", category: "academic", placeholder: "UCT" },
-    { name: "Paystack", category: "network", placeholder: "PS" },
   ];
 
   const certifications = [
@@ -173,47 +172,26 @@ const Partners = () => {
           </div>
         </div>
 
-        {/* Press & Recognition */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8 text-white">Recognition & Awards</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-8 rounded-lg border border-gray-600">
-              <FaAward className="text-blue-400 text-3xl mx-auto mb-4" />
-              <h3 className="font-semibold text-white mb-3 text-xl">CSIR AI Scholarship</h3>
-              <p className="text-gray-300">Recognition for outstanding AI research and innovation</p>
-            </div>
-            <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 p-8 rounded-lg border border-gray-600">
-              <FaUniversity className="text-green-400 text-3xl mx-auto mb-4" />
-              <h3 className="font-semibold text-white mb-3 text-xl">UCT Computer Science</h3>
-              <p className="text-gray-300">Graduate from South Africa's leading technical university</p>
-            </div>
-            <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 p-8 rounded-lg border border-gray-600">
-              <FaHandshake className="text-orange-400 text-3xl mx-auto mb-4" />
-              <h3 className="font-semibold text-white mb-3 text-xl">Enterprise Experience</h3>
-              <p className="text-gray-300">FinTech expertise from Paystack and cloud infrastructure knowledge</p>
-            </div>
-          </div>
-        </div>
 
-        {/* Talk to Our Team - Call to Action */}
+        {/* Contact Information */}
         <div className="text-center bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-12 rounded-lg">
-          <h2 className="text-4xl font-bold text-white mb-6">Talk to Our Team</h2>
+          <h2 className="text-4xl font-bold text-white mb-6">Ready to Partner With Us?</h2>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto text-lg">
-            Become part of South Africa's edge AI pioneer network. Get early access to cutting-edge 
-            technology and help shape the future of local AI processing.
+            Join our network of partners, clients, and advisors. Connect with our team to explore 
+            collaboration opportunities and strategic partnerships.
           </p>
           <div className="flex flex-col md:flex-row gap-6 justify-center">
             <a 
-              href="/pilot-program" 
+              href="/#contact-us" 
               className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold text-lg"
             >
-              Join Pilot Program
+              Meet Our Team
             </a>
             <a 
-              href="/#early-access" 
+              href="/pilot-program" 
               className="px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-semibold text-lg"
             >
-              Get Early Access
+              Partnership Program
             </a>
           </div>
         </div>

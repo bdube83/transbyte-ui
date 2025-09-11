@@ -36,9 +36,6 @@ const HowItWorks = ({ onLaunchDemo }) => {
           <p className="text-gray-400 max-w-2xl mx-auto mb-4">
             Deploy rugged edge AI that works offline-first, processes data locally, and syncs intelligently to the cloud
           </p>
-          <div className="inline-flex items-center px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-300 text-sm">
-            💡 Prototype under development • Performance estimates based on testing
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
@@ -116,7 +113,7 @@ const HowItWorks = ({ onLaunchDemo }) => {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-lg"
             onClick={handleContactUs}
           >
-            Request Live Demo
+            Contact Our Team
           </button>
         </div>
       </div>

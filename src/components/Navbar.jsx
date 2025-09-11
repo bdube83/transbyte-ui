@@ -29,16 +29,13 @@ const Navbar = () => {
           <a href="#early-access">Sign Up</a>
         </li>
         <li className="hover:text-gray-300">
-          <a href="#about">About</a>
+          <a href="#contact-us">Contact Us</a>
         </li>
         <li className="hover:text-gray-300">
           <a href="/partners">Partners</a>
         </li>
         <li className="hover:text-gray-300">
           <a href="/blog">Blog</a>
-        </li>
-        <li className="hover:text-gray-300">
-          <a href="#contact-us">Contact Us</a>
         </li>
       </ul>
 
@@ -63,16 +60,13 @@ const Navbar = () => {
             <a href="#early-access" onClick={toggleMenu}>Sign Up</a>
           </li>
           <li className="hover:text-gray-300">
-            <a href="#about" onClick={toggleMenu}>About</a>
+            <a href="#contact-us" onClick={toggleMenu}>Contact Us</a>
           </li>
           <li className="hover:text-gray-300">
             <a href="/partners" onClick={toggleMenu}>Partners</a>
           </li>
           <li className="hover:text-gray-300">
             <a href="/blog" onClick={toggleMenu}>Blog</a>
-          </li>
-          <li className="hover:text-gray-300">
-            <a href="#contact-us" onClick={toggleMenu}>Contact Us</a>
           </li>
         </ul>
       )}

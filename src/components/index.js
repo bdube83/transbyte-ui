@@ -35,6 +35,7 @@ import Blog from "./Blog";
 import BlogPage from "./BlogPage";
 import Partners from "./Partners";
 import SocialProof from "./SocialProof";
+import FloatingDemoButton from "./FloatingDemoButton";
 import DriverScanner from "./DriverScanner";
 import MapView from "./MapView";
 import RadarCircularScanner from "./RadarCircularScanner";
@@ -78,6 +79,7 @@ export {
   BlogPage,
   Partners,
   SocialProof,
+  FloatingDemoButton,
   DriverScanner,
   MapView,
   RadarCircularScanner,

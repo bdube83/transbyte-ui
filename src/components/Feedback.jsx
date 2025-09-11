@@ -11,7 +11,7 @@ const Feedback = () => {
     jobTitle: "",
     additionalInfo: "",
   });
-  
+
   const [turnstileToken, setTurnstileToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const turnstileRef = useRef(null);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../style";
 import Navbar from "./Navbar";
 import Hero from "./Hero";
@@ -6,14 +6,46 @@ import Business from "./Business";
 import Popup from "./Popup";
 import Footer from "./Footer";
 import HowItWorks from "./HowItWorks";
-import Feedback from "./Feedback";
 import EarlyAccess from "./EarlyAccess";
 import FounderSection from "./FounderSection";
 import SocialProof from "./SocialProof";
+import FloatingDemoButton from "./FloatingDemoButton";
 
 const Home = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupInitialStep, setPopupInitialStep] = useState(0);
+
+  // Handle anchor links when navigating from other pages
+  useEffect(() => {
+    const scrollToAnchor = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        // Remove the # symbol
+        const elementId = hash.substring(1);
+        const element = document.getElementById(elementId);
+        if (element) {
+          // Small delay to ensure the page has rendered
+          setTimeout(() => {
+            element.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }, 100);
+        }
+      }
+    };
+
+    // Scroll on initial load and when hash changes
+    scrollToAnchor();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', scrollToAnchor);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('hashchange', scrollToAnchor);
+    };
+  }, []);
 
   // For the Hero section, start at step 0 (the intro screen)
   const handleLaunchDemoFromHero = () => {
@@ -83,15 +115,12 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Feedback Section */}
-      <div className={`bg-primary ${styles.flexStart}`}>
-        <div className={`${styles.boxWidth}`}>
-          <Feedback />
-        </div>
-      </div>
 
       {/* MVP Popup */}
       {isPopupOpen && <Popup onClose={handleClosePopup} initialStep={popupInitialStep} />}
+
+      {/* Floating Demo Button */}
+      <FloatingDemoButton />
 
       {/* Footer Section */}
       <div className={`${styles.paddingX} ${styles.flexCenter} bg-primary`}>

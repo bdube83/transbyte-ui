@@ -285,7 +285,7 @@ const PilotProgram = () => {
           </div>
 
           <div className="mt-6 text-sm text-gray-400">
-            <p>Questions? Email <a href="mailto:bongani@edgebox.africa" className="text-blue-400 hover:underline">bongani@edgebox.africa</a> or call +27 (0)XX XXX XXXX</p>
+            <p>Questions? Email <a href="mailto:support@edgebox.africa" className="text-blue-400 hover:underline">support@edgebox.africa</a></p>
           </div>
         </section>
 
