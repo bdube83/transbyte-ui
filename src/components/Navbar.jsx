@@ -23,9 +23,6 @@ const Navbar = () => {
           <a href="#how-it-works">How It Works</a>
         </li>
         <li className="hover:text-gray-300">
-          <a href="#demo">Demo</a>
-        </li>
-        <li className="hover:text-gray-300">
           <a href="#early-access">Sign Up</a>
         </li>
         <li className="hover:text-gray-300">
