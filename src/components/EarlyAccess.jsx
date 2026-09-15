@@ -1,226 +1,36 @@
-import React, { useState, useEffect, useRef } from "react";
-import styles from "../style";
+import React, { useEffect, useRef, useState } from "react";
 import CalendlyButton from "./CalendlyButton";
 
-const EarlyAccess = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const turnstileRef = useRef(null);
-  const widgetId = useRef(null);
-
-  // Use demo site key if environment variable is not set
-  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
-
-  useEffect(() => {
-    // Initialize Turnstile when the script is loaded
-    const initializeTurnstile = () => {
-      if (window.turnstile && turnstileRef.current && !widgetId.current) {
-        widgetId.current = window.turnstile.render(turnstileRef.current, {
-          sitekey: siteKey,
-          callback: (token) => {
-            setTurnstileToken(token);
-          },
-          "error-callback": () => {
-            console.error("Turnstile error");
-            setTurnstileToken(null);
-          },
-          "expired-callback": () => {
-            console.log("Turnstile expired");
-            setTurnstileToken(null);
-          },
-        });
-      }
+export default function EarlyAccess() {
+  const [name,setName]=useState(""), [email,setEmail]=useState(""), [token,setToken]=useState(null), [busy,setBusy]=useState(false), [status,setStatus]=useState("");
+  const target=useRef(null);
+  const siteKey=import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
+  // Explicit verification gate. Do not silently use an always-pass test key in production.
+  const enabled=import.meta.env.VITE_LEAD_CAPTURE_VERIFIED === "true" && Boolean(siteKey) && !/^[123]x0+/.test(siteKey);
+  useEffect(()=>{
+    if(!enabled) return;
+    let widget=null, stopped=false;
+    const render=()=>{
+      if(stopped || widget!==null || !window.turnstile || !target.current) return;
+      widget=window.turnstile.render(target.current,{sitekey:siteKey,callback:setToken,"expired-callback":()=>setToken(null),"error-callback":()=>{setToken(null);setStatus("Verification could not load. Please use the booking or email link below.");}});
     };
-
-    // Check if Turnstile is already loaded
-    if (window.turnstile) {
-      initializeTurnstile();
-    } else {
-      // Wait for the script to load
-      const checkTurnstile = setInterval(() => {
-        if (window.turnstile) {
-          clearInterval(checkTurnstile);
-          initializeTurnstile();
-        }
-      }, 100);
-
-      // Clean up interval after 10 seconds
-      setTimeout(() => clearInterval(checkTurnstile), 10000);
-    }
-
-    // Cleanup function
-    return () => {
-      if (window.turnstile && widgetId.current) {
-        try {
-          window.turnstile.remove(widgetId.current);
-        } catch (e) {
-          console.log("Error removing turnstile widget:", e);
-        }
-        widgetId.current = null;
-      }
-    };
-  }, [siteKey]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Prevent duplicate submissions
-    if (isLoading) return;
-
-    // Check if we have a turnstile token
-    if (!turnstileToken) {
-      alert("Please complete the CAPTCHA.");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const resp = await fetch("https://api.edgebox.africa/early-access", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, "cf-turnstile-response": turnstileToken }),
-      });
-
-      const result = await resp.json();
-      if (result.success) {
-        alert("Thanks for joining our pilot program! We'll contact you soon.");
-        setName("");
-        setEmail("");
-        // Reset the CAPTCHA
-        if (window.turnstile && widgetId.current) {
-          window.turnstile.reset(widgetId.current);
-          setTurnstileToken(null);
-        }
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
-    } catch (err) {
-      alert("Error submitting form. Try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <section
-      id="early-access"
-      className="py-12 px-6 text-white flex flex-col justify-center items-center min-h-screen"
-    >
-      <div className="max-w-3xl w-full text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Sign Up
-        </h2>
-        <p className="mb-6 text-gray-300">
-          Sign up now for a free site assessment and be among the first to deploy EdgeBox at your location!
-        </p>
-        <form
-          onSubmit={handleSubmit}
-          className="max-w-md mx-auto space-y-6"
-        >
-          {/* Form Fields */}
-          <div className="space-y-4">
-            <div>
-              <input
-                type="text"
-                placeholder="Your Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={isLoading}
-                className={`w-full p-4 rounded-lg text-black border border-gray-300 focus:border-blue-500 focus:outline-none transition-colors ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              />
-            </div>
-            <div>
-              <input
-                type="email"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-                className={`w-full p-4 rounded-lg text-black border border-gray-300 focus:border-blue-500 focus:outline-none transition-colors ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              />
-            </div>
-          </div>
-
-          {/* Turnstile Widget */}
-          <div className={`flex justify-center py-4 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
-            <div
-              ref={turnstileRef}
-              className="cf-turnstile"
-            ></div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full font-bold py-4 px-6 rounded-lg transition-colors shadow-lg ${
-              isLoading
-                ? 'bg-gray-500 cursor-not-allowed'
-                : 'bg-blue-500 hover:bg-blue-600 hover:shadow-xl'
-            } text-white`}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </span>
-            ) : (
-              'Join Free Pilot Program'
-            )}
-          </button>
-
-          {/* Compact Privacy Info */}
-          <div className="text-xs text-gray-400 text-center">
-            <p className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-green-400">🔒</span>
-              Protected by Cloudflare • 
-              <a 
-                href="/privacy-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 underline"
-              >
-                Privacy Policy
-              </a>
-            </p>
-          </div>
-        </form>
-
-        {/* Simplified Additional Options */}
-        <div className="mt-6 pt-4 border-t border-gray-700 max-w-md mx-auto text-center">
-          <p className="text-sm text-gray-300 mb-3">Want to speak with our founder first?</p>
-          
-          <CalendlyButton 
-            text="Talk to our founder" 
-            variant="outline"
-            size="small"
-            className="mb-4"
-          />
-          
-          {/* Compact Contact Info */}
-          <div className="text-xs text-gray-500 space-y-1">
-            <p><strong>EdgeBox Technologies</strong></p>
-            <div className="flex justify-center items-center gap-3">
-              <span>📧 support@edgebox.africa</span>
-              <span>🌐 edgebox.africa</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default EarlyAccess;
+    render(); const poll=setInterval(render,200); const timeout=setTimeout(()=>{clearInterval(poll);if(widget===null)setStatus("Verification unavailable. Please use booking or email.");},10000);
+    return()=>{stopped=true;clearInterval(poll);clearTimeout(timeout);if(widget!==null && window.turnstile)window.turnstile.remove(widget);};
+  },[enabled,siteKey]);
+  async function submit(event) {
+    event.preventDefault(); if(!enabled || !token || busy)return;
+    setBusy(true);setStatus("");const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+    try{
+      const response=await fetch("https://api.edgebox.africa/early-access",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name.trim(),email:email.trim(),"cf-turnstile-response":token}),signal:controller.signal});
+      const result=await response.json();
+      if(!response.ok || result.success!==true)throw new Error("Submission was not confirmed. Please try again or contact us by email.");
+      setStatus("The service confirmed your enquiry. This is not a pilot booking or a purchase.");setName("");setEmail("");
+    }catch(error){setStatus(error.name==="AbortError"?"The request timed out; receipt is unknown. Please contact us by email before resubmitting.":error.message);}
+    finally{clearTimeout(timeout);setBusy(false);setToken(null);if(window.turnstile && target.current)try{window.turnstile.reset(target.current);}catch{/* User may use the alternative contact route. */}}
+  }
+  return <section id="early-access" className="max-w-3xl mx-auto px-6 py-16 text-white">
+    <h2 className="text-3xl font-bold mb-4">Discuss your site</h2><p className="text-gray-300 mb-6">Start with a feasibility discussion. It does not enrol you in a free pilot or commit either party to paid work.</p>
+    {enabled?<form onSubmit={submit} className="space-y-4"><label className="block">Name<input required maxLength={120} autoComplete="name" value={name} onChange={e=>setName(e.target.value)} disabled={busy} className="block w-full mt-1 p-3 rounded text-black" /></label><label className="block">Work email<input required type="email" maxLength={254} autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} disabled={busy} className="block w-full mt-1 p-3 rounded text-black" /></label><div ref={target} /><p className="text-sm text-gray-400">We use these details to respond to this enquiry. Read our <a className="underline" href="/privacy-policy">privacy policy</a>.</p><button disabled={busy || !token} className="bg-blue-600 disabled:opacity-50 px-6 py-3 rounded">{busy?"Sending enquiry…":"Send enquiry"}</button></form>:<p className="border border-gray-600 rounded-lg p-5 text-gray-300 mb-6">The online enquiry form is temporarily unavailable while receipt and data-handling checks are completed. Please use the existing booking or email option below.</p>}
+    <p role="status" aria-live="polite" className="my-4">{status}</p><div className="flex flex-wrap items-center gap-6"><CalendlyButton text="Book a feasibility discussion" variant="primary" size="large" /><a href="mailto:support@edgebox.africa?subject=Edgebox%20site%20feasibility" className="underline text-blue-300">Email support@edgebox.africa</a></div>
+  </section>;
+}
