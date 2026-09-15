@@ -5,13 +5,40 @@ import CalendlyButton from "./CalendlyButton";
 export default function BusinessHome() {
   return <main className="bg-primary text-white min-h-screen">
     <nav className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between"><Link to="/" className="font-bold text-xl">EDGEBOX</Link><Link to="/home" className="underline text-sm">For your home</Link></nav>
-    <section className="max-w-5xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-12 items-center">
-      <div><p className="text-blue-300 font-semibold mb-3">EDGEBOX FOR BUSINESS</p><h1 className="text-4xl md:text-6xl font-bold leading-tight">Your cameras can do more than record.</h1><p className="text-xl text-gray-300 mt-6">Use the cameras you already have to flag important events and find the evidence your team needs.</p><div className="mt-8"><CalendlyButton text="Book a site assessment" variant="primary" size="large" /></div><p className="text-sm text-gray-400 mt-4">We check your site and camera setup before recommending a paid installation.</p></div>
-      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-700"><h2 className="text-2xl font-bold mb-6">Start with one problem</h2><ul className="space-y-5 text-gray-200"><li><strong className="text-white">Long queues or delays</strong><br/>Get an alert when a defined wait becomes too long.</li><li><strong className="text-white">Finding footage takes too long</strong><br/>Get to the relevant event and evidence faster.</li><li><strong className="text-white">Cameras go offline unnoticed</strong><br/>Know when an accepted camera source stops reporting.</li></ul></div>
+
+    <section className="max-w-5xl mx-auto px-6 py-16">
+      <p className="text-blue-300 font-semibold mb-3">EDGEBOX FOR BUSINESS</p>
+      <h1 className="text-4xl md:text-6xl font-bold leading-tight max-w-4xl">Make the cameras you already have more useful.</h1>
+      <p className="text-xl text-gray-300 mt-6 max-w-3xl">Get useful alerts, know when cameras stop reporting, and get to the right event faster.</p>
     </section>
-    <section className="max-w-5xl mx-auto px-6 py-12"><h2 className="text-3xl font-bold mb-8">How you get started</h2><ol className="grid md:grid-cols-3 gap-5">{[["1","Show us the site","Tell us the problem and what cameras you use."],["2","We check the fit","We confirm what can work and give you a clear scope and price."],["3","Run one paid pilot","We test one workflow before you roll it out further."]].map(([n,t,d])=><li key={n} className="border border-gray-700 rounded-xl p-6"><span className="text-blue-300 font-bold">{n}</span><h3 className="font-bold text-xl mt-3 mb-2">{t}</h3><p className="text-gray-300">{d}</p></li>)}</ol></section>
-    <section className="max-w-5xl mx-auto px-6 py-12"><div className="bg-gray-900 rounded-2xl p-8 md:p-10 flex flex-col md:flex-row justify-between gap-8 items-start md:items-center"><div><p className="text-sm text-gray-400 mb-2">STARTING OFFER</p><h2 className="text-3xl font-bold">Site pilot — from R25,000</h2><p className="text-gray-300 mt-2">One site. One workflow. Up to eight compatible camera streams. Final scope and price follow the site check.</p></div><CalendlyButton text="Book a site assessment" variant="primary" size="large" /></div><p className="text-sm text-gray-500 mt-4">Hardware, travel, third-party licences and extra integration work may be quoted separately. VAT may apply.</p></section>
-    <section className="max-w-5xl mx-auto px-6 py-16 text-center"><h2 className="text-3xl font-bold">Ready to see if Edgebox fits your site?</h2><p className="text-gray-300 mt-3 mb-6">Start with a short site assessment. No checkout before we know the setup can work.</p><CalendlyButton text="Book a site assessment" variant="primary" size="large" /></section>
+
+    <section className="max-w-5xl mx-auto px-6 pb-16 grid md:grid-cols-2 gap-6">
+      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-700 flex flex-col">
+        <p className="text-blue-300 font-semibold mb-2">FOR YOUR PREMISES</p>
+        <h2 className="text-3xl font-bold">Protect a shop, office, yard or site</h2>
+        <p className="text-gray-300 mt-4 mb-6">Keep compatible cameras. We check the setup first, then recommend the simplest alert or monitoring option that fits.</p>
+        <ul className="space-y-3 text-gray-200 mb-8"><li>• Person or vehicle alerts where supported</li><li>• Camera and site health</li><li>• Event history that is easier to review</li></ul>
+        <div className="mt-auto"><CalendlyButton text="Check my cameras" variant="primary" size="large" /></div>
+      </div>
+
+      <div className="bg-gray-900 rounded-2xl p-8 border border-gray-700 flex flex-col">
+        <p className="text-blue-300 font-semibold mb-2">FOR SECURITY COMPANIES & INSTALLERS</p>
+        <h2 className="text-3xl font-bold">Add smarter camera services to your customers</h2>
+        <p className="text-gray-300 mt-4 mb-6">Use Edgebox behind your existing customer and response operation. Manage sites, camera health and events in one place, with APIs for your own systems.</p>
+        <ul className="space-y-3 text-gray-200 mb-8"><li>• Existing-camera integrations</li><li>• Multi-customer site and device view</li><li>• Event handoff to your control-room workflow</li></ul>
+        <a href="mailto:support@edgebox.africa?subject=Edgebox%20security%20partner" className="mt-auto inline-block text-center bg-blue-600 hover:bg-blue-500 rounded-lg px-6 py-3 font-semibold">Talk about partnering</a>
+      </div>
+    </section>
+
+    <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-800">
+      <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div><p className="text-blue-300 font-semibold mb-2">LOGISTICS & OPERATIONS</p><h2 className="text-3xl font-bold">Need more than security?</h2><p className="text-gray-300 mt-4">For depots, warehouses and yards, we can look at a specific problem such as long vehicle waits or finding loading and dispatch evidence.</p></div>
+        <div><CalendlyButton text="Discuss an operations problem" variant="outline" size="large" /><p className="text-sm text-gray-500 mt-3">We price operational work after understanding the problem and existing systems.</p></div>
+      </div>
+    </section>
+
+    <section className="max-w-5xl mx-auto px-6 py-16 text-center"><h2 className="text-3xl font-bold">Start with what you already have.</h2><p className="text-gray-300 mt-3 mb-6">Tell us your camera or recorder brand and what you want to improve. We will check compatibility before recommending anything paid.</p><CalendlyButton text="Check my setup" variant="primary" size="large" /></section>
+
     <footer className="max-w-5xl mx-auto px-6 py-8 border-t border-gray-800 flex gap-6 text-sm text-gray-400"><Link to="/privacy-policy" className="underline">Privacy</Link><Link to="/terms-of-service" className="underline">Terms</Link><a href="mailto:support@edgebox.africa" className="underline">Contact</a></footer>
   </main>;
 }
