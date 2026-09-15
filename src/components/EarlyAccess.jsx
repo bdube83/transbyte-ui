@@ -3,19 +3,20 @@ import CalendlyButton from "./CalendlyButton";
 
 export default function EarlyAccess() {
   const [name,setName]=useState(""), [email,setEmail]=useState(""), [token,setToken]=useState(null), [busy,setBusy]=useState(false), [status,setStatus]=useState("");
-  const target=useRef(null);
+  const target=useRef(null), widgetId=useRef(null);
   const siteKey=import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
   // Explicit verification gate. Do not silently use an always-pass test key in production.
   const enabled=import.meta.env.VITE_LEAD_CAPTURE_VERIFIED === "true" && Boolean(siteKey) && !/^[123]x0+/.test(siteKey);
   useEffect(()=>{
     if(!enabled) return;
-    let widget=null, stopped=false;
+    let stopped=false;
     const render=()=>{
-      if(stopped || widget!==null || !window.turnstile || !target.current) return;
-      widget=window.turnstile.render(target.current,{sitekey:siteKey,callback:setToken,"expired-callback":()=>setToken(null),"error-callback":()=>{setToken(null);setStatus("Verification could not load. Please use the booking or email link below.");}});
+      if(stopped || widgetId.current!==null || !window.turnstile || !target.current) return;
+      try { widgetId.current=window.turnstile.render(target.current,{sitekey:siteKey,callback:setToken,"expired-callback":()=>setToken(null),"error-callback":()=>{setToken(null);setStatus("Verification could not load. Please use the booking or email link below.");}}); }
+      catch { setStatus("Verification unavailable. Please use booking or email."); }
     };
-    render(); const poll=setInterval(render,200); const timeout=setTimeout(()=>{clearInterval(poll);if(widget===null)setStatus("Verification unavailable. Please use booking or email.");},10000);
-    return()=>{stopped=true;clearInterval(poll);clearTimeout(timeout);if(widget!==null && window.turnstile)window.turnstile.remove(widget);};
+    render(); const poll=setInterval(render,200); const timeout=setTimeout(()=>{clearInterval(poll);if(widgetId.current===null)setStatus("Verification unavailable. Please use booking or email.");},10000);
+    return()=>{stopped=true;clearInterval(poll);clearTimeout(timeout);if(widgetId.current!==null && window.turnstile)try{window.turnstile.remove(widgetId.current);}catch{/* Widget may already have been removed. */}widgetId.current=null;};
   },[enabled,siteKey]);
   async function submit(event) {
     event.preventDefault(); if(!enabled || !token || busy)return;
@@ -25,8 +26,8 @@ export default function EarlyAccess() {
       const result=await response.json();
       if(!response.ok || result.success!==true)throw new Error("Submission was not confirmed. Please try again or contact us by email.");
       setStatus("The service confirmed your enquiry. This is not a pilot booking or a purchase.");setName("");setEmail("");
-    }catch(error){setStatus(error.name==="AbortError"?"The request timed out; receipt is unknown. Please contact us by email before resubmitting.":error.message);}
-    finally{clearTimeout(timeout);setBusy(false);setToken(null);if(window.turnstile && target.current)try{window.turnstile.reset(target.current);}catch{/* User may use the alternative contact route. */}}
+    }catch(error){setStatus(error.name==="AbortError"?"The request timed out; receipt is unknown. Please contact us by email before resubmitting.":"Submission was not confirmed. Please use booking or email if the problem continues.");}
+    finally{clearTimeout(timeout);setBusy(false);setToken(null);if(window.turnstile && widgetId.current!==null)try{window.turnstile.reset(widgetId.current);}catch{/* User may use the alternative contact route. */}}
   }
   return <section id="early-access" className="max-w-3xl mx-auto px-6 py-16 text-white">
     <h2 className="text-3xl font-bold mb-4">Discuss your site</h2><p className="text-gray-300 mb-6">Start with a feasibility discussion. It does not enrol you in a free pilot or commit either party to paid work.</p>
