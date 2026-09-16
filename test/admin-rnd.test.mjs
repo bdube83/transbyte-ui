@@ -82,3 +82,4 @@ test('R&D mutations require CSRF and a logged-out session cannot reach the board
   assert.equal((await f.call('/admin/logout','POST',{})).status,200);
   assert.equal((await f.call('/admin/rnd')).status,401);
 });
+test('a TOTP code cannot be replayed to mint a second session',async()=>{const f=fixture();const code=totpCode(TOTP_SECRET,f.getTime());const first=await f.call('/admin/login','POST',{email:'info@khuselaworkflow.com',password:PASSWORD,otp:code});assert.equal(first.status,200);const second=await f.call('/admin/login','POST',{email:'info@khuselaworkflow.com',password:PASSWORD,otp:code});assert.equal(second.status,401);});

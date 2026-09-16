@@ -69,7 +69,8 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
   }
   const isInternal = (s: any) => Boolean(s?.sub && settings.internalSubs?.includes(s.sub));
   // --- Email/password + TOTP admin (Khusela-style second factor). Credential lives only in env. ---
-  function verifyTotp(secret: string, otp: string){ if(!/^\d{6}$/.test(otp||''))return false; for(let w=-1;w<=1;w++){ let code; try{ code=totpCode(secret,now()+w*30000); }catch{ return false; } if(timingSafeEqual(Buffer.from(code),Buffer.from(otp)))return true; } return false; }
+  // Returns the matched 30s counter (for single-use tracking) or -1 when no window matches.
+  function totpMatch(secret: string, otp: string){ if(!/^\d{6}$/.test(otp||''))return -1; const base=Math.floor(now()/1000/30); for(let w=-1;w<=1;w++){ let code; try{ code=totpCode(secret,(base+w)*30000); }catch{ return -1; } if(timingSafeEqual(Buffer.from(code),Buffer.from(otp)))return base+w; } return -1; }
   function verifyPassword(password: string, stored: string){ const [saltHex,hashHex]=(stored||'').split(':'); if(!saltHex||!hashHex)return false; let got; try{ got=scryptSync(password,Buffer.from(saltHex,'hex'),64); }catch{ return false; } const want=Buffer.from(hashHex,'hex'); return got.length===want.length && timingSafeEqual(got,want); }
   async function adminAuth(req: Request){
     const tok=cookies(req)['__Host-eb-admin'];
@@ -188,12 +189,15 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
     }
     // Internal operator surface: email/password + TOTP admin session, or a Google internal session. Before the customer gate.
     if(req.method==='POST' && path==='/api/v1/admin/login'){
-      await rate('admin-login',30); await rate(`admin-login-ip-${digest(clientIp||'unknown')}`,10);
+      // Per-IP bucket only (clientIp is the platform-supplied, non-spoofable source). A global or
+      // per-email bucket would let a flood on the known admin email lock the operator out of sign-in.
+      await rate(`admin-login-ip-${digest(clientIp||'unknown')}`,20);
       const body=await json(req), email=text(body.email,'email',320).toLowerCase(), password=text(body.password,'password',200), otp=text(body.otp,'code',12);
-      await rate(`admin-login-${digest(email)}`,10);
       const cfg=settings.admin; if(!cfg?.email || !cfg?.passwordHash || !cfg?.totpSecret)throw new HttpError(503,'Admin sign-in is not configured.');
-      const okEmail=equal(email,cfg.email.toLowerCase()), okPass=verifyPassword(password,cfg.passwordHash), okOtp=verifyTotp(cfg.totpSecret,otp);
-      if(!okEmail || !okPass || !okOtp)throw new HttpError(401,'Invalid email, password or code.');
+      const okEmail=equal(email,cfg.email.toLowerCase()), okPass=verifyPassword(password,cfg.passwordHash), otpCounter=totpMatch(cfg.totpSecret,otp);
+      if(!okEmail || !okPass || otpCounter<0)throw new HttpError(401,'Invalid email, password or code.');
+      // Single-use TOTP (RFC 6238 §5.2). Reached only with a correct email and password.
+      await change(`admin-totp/${digest(cfg.email.toLowerCase())}`,()=>({last:-1}),d=>{ if(otpCounter<=d.last)throw new HttpError(401,'That code was already used. Wait for the next code.'); d.last=otpCounter; });
       const token=secret(), csrf=secret();
       if(!await storage.write(`admin-sessions/${digest(token)}`,{email:cfg.email.toLowerCase(),csrf,expires:now()+2*3600000,revoked:false},null))throw new HttpError(503,'Please try signing in again.');
       return new Response(JSON.stringify({signed_in:true,csrf,operator:{email:cfg.email.toLowerCase()}}),{status:200,headers:{'Content-Type':'application/json','Set-Cookie':`__Host-eb-admin=${token}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=7200`}});
@@ -209,7 +213,7 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
       if(req.method==='POST' && path==='/api/v1/admin/rnd/experiments'){
         const body=await json(req), title=text(body.title,'title',200), hypothesis=text(body.hypothesis,'hypothesis',1000), cheapest_test=text(body.cheapest_test,'cheapest test',1000);
         const cost_minor=Number.isSafeInteger(body.cost_minor) && body.cost_minor>=0 && body.cost_minor<=100000000000?body.cost_minor:0, gate=rndGates.includes(body.gate)?body.gate:'r100k';
-        return ok(await change('rnd/board',rndInitial,b=>{ if(b.experiments.length>=500)throw new HttpError(409,'Experiment limit reached.'); const exp={id:randomUUID(),title,hypothesis,cheapest_test,cost_minor,gate,stage:'idea',result:'',decision:'',createdAt:new Date(now()).toISOString(),updatedAt:new Date(now()).toISOString()}; b.experiments.push(exp); b.updatedAt=exp.updatedAt; return exp; }),201);
+        return ok(await change('rnd/board',rndInitial,b=>{ if(b.experiments.length>=500)throw new HttpError(409,'Experiment limit reached.'); const exp={id:randomUUID(),title,hypothesis,cheapest_test,cost_minor,gate,stage:'idea',result:'',decision:'',createdAt:new Date(now()).toISOString(),updatedAt:new Date(now()).toISOString()}; b.experiments.push(exp); if(Buffer.byteLength(JSON.stringify(b))>2000000)throw new HttpError(409,'Board capacity reached. Export and archive experiments.'); b.updatedAt=exp.updatedAt; return exp; }),201);
       }
       const rndPatch=path.match(/^\/api\/v1\/admin\/rnd\/experiments\/([A-Za-z0-9_-]+)$/);
       if(req.method==='POST' && rndPatch){ const body=await json(req); return ok(await change('rnd/board',()=>{throw new HttpError(404,'Experiment not found.');},b=>{ const e=b.experiments.find((x:any)=>x.id===rndPatch[1]); if(!e)throw new HttpError(404,'Experiment not found.'); if(body.stage!==undefined){ if(!rndStages.includes(body.stage))throw new HttpError(400,'Invalid stage.'); e.stage=body.stage; } if(body.title!==undefined)e.title=text(body.title,'title',200); if(body.hypothesis!==undefined)e.hypothesis=text(body.hypothesis,'hypothesis',1000); if(body.cheapest_test!==undefined)e.cheapest_test=text(body.cheapest_test,'cheapest test',1000); if(body.result!==undefined)e.result=String(body.result).slice(0,2000); if(body.decision!==undefined){ if(!['','pursue','kill','iterate'].includes(body.decision))throw new HttpError(400,'Invalid decision.'); e.decision=body.decision; } if(body.cost_minor!==undefined && Number.isSafeInteger(body.cost_minor) && body.cost_minor>=0 && body.cost_minor<=100000000000)e.cost_minor=body.cost_minor; if(body.gate!==undefined && rndGates.includes(body.gate))e.gate=body.gate; e.updatedAt=new Date(now()).toISOString(); b.updatedAt=e.updatedAt; return e; })); }
