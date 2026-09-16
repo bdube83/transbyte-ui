@@ -53,11 +53,13 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
   // Claim any pending invitations addressed to this verified email, pinning each membership to this Google identity.
   async function claimInvites(identity: any, email: string) {
     const key=`invites/${digest(email.toLowerCase())}`, pending=await storage.read(key); if(!pending)return identity;
-    for(const oid of pending.data.orgs){
+    const processed=pending.data.orgs.slice();
+    for(const oid of processed){
       const claimed=await change(`orgs/${oid}`,()=>null,a=>{if(!a)return null;const m=a.members.find((x:any)=>x.email.toLowerCase()===email.toLowerCase() && x.pending);if(!m)return null;m.idId=identity.idId;m.pending=false;audit(a,'member.joined',email);return {orgId:a.orgId,type:a.type,name:a.name,role:m.role};});
       if(claimed)await change(`identity/${identity.idId}`,()=>{throw new HttpError(401,'Please sign in.');},idn=>{if(!idn.memberships.some((m:any)=>m.orgId===claimed.orgId)){idn.memberships.push({orgId:claimed.orgId,type:claimed.type,name:claimed.name,role:claimed.role});if(!idn.defaultOrgId)idn.defaultOrgId=claimed.orgId;}});
     }
-    await change(key,()=>({orgs:[]}),d=>{d.orgs=[];});
+    // Only clear what we processed, so an invite added concurrently is not lost.
+    await change(key,()=>({orgs:[]}),d=>{d.orgs=(d.orgs||[]).filter((o:any)=>!processed.includes(o));});
     return (await loadIdentity(identity.idId))!;
   }
   const isInternal = (s: any) => Boolean(s?.sub && settings.internalSubs?.includes(s.sub));
@@ -109,7 +111,9 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
     });
   }
   function view(a: any, role: string) {
-    return {organisation:{id:a.orgId,type:a.type,name:a.name,role},sites:a.sites,sources:a.sources.map((s:any)=>({...s,status:s.lastSeen===null?'awaiting_events':now()-s.lastSeen>900000?'stale':'receiving_events'})),events:[...a.events].reverse(),keys:a.keys.map(({hash,...k}:any)=>k),requests:a.requests,usage:{sites:a.sites.length,sources:a.sources.length,events:a.events.length,event_limit:1000,amount_due_minor:0,currency:'ZAR',plan:'No paid subscription'},audit:[...a.audit].reverse(),capabilities:{metadata_events:true,camera_video:false,ai_detection:false,armed_response:false,payments:false,partner_delegation:true}};
+    // A delegated partner reads events to verify them but should not see the org's member/audit trail.
+    const audit = role==='partner' ? [] : [...a.audit].reverse();
+    return {organisation:{id:a.orgId,type:a.type,name:a.name,role},sites:a.sites,sources:a.sources.map((s:any)=>({...s,status:s.lastSeen===null?'awaiting_events':now()-s.lastSeen>900000?'stale':'receiving_events'})),events:[...a.events].reverse(),keys:a.keys.map(({hash,...k}:any)=>k),requests:a.requests,usage:{sites:a.sites.length,sources:a.sources.length,events:a.events.length,event_limit:1000,amount_due_minor:0,currency:'ZAR',plan:'No paid subscription'},audit,capabilities:{metadata_events:true,camera_video:false,ai_detection:false,armed_response:false,payments:false,partner_delegation:true}};
   }
   async function handle(req: Request, clientIp: string) {
     const url=new URL(req.url), path=url.pathname;
@@ -197,12 +201,15 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
     if(req.method==='GET' && path==='/api/v1/members'){const ctx=await context(req,s);enforce(ctx.org,s.idId,'manage');return ok({members:ctx.org.members.map((m:any)=>({email:m.email,role:m.role,pending:Boolean(m.pending)})),delegations:ctx.org.delegations.filter((d:any)=>!d.revoked).map((d:any)=>({email:d.email,scope:d.scope}))});}
     if(req.method==='POST' && path==='/api/v1/members'){
       const ctx=await context(req,s), body=await json(req), email=text(body.email,'email',320).toLowerCase(); if(!['admin','member','viewer'].includes(body.role))throw new HttpError(400,'Choose a role.');
-      const result=await command(ctx.orgId,s.idId,req,'manage','member.invite',{email,role:body.role},a=>{if(a.members.length>=50)throw new HttpError(409,'Member limit reached.');const existing=a.members.find((m:any)=>m.email.toLowerCase()===email);if(existing){existing.role=body.role;audit(a,'member.role_changed',email);return {email,role:body.role,pending:Boolean(existing.pending)};}a.members.push({idId:null,email,role:body.role,pending:true,addedAt:new Date(now()).toISOString()});audit(a,'member.invited',email);return {email,role:body.role,pending:true};});
+      const result=await command(ctx.orgId,s.idId,req,'manage','member.invite',{email,role:body.role},a=>{const actor=a.members.find((m:any)=>m.idId===s.idId);if(a.members.length>=50)throw new HttpError(409,'Member limit reached.');const existing=a.members.find((m:any)=>m.email.toLowerCase()===email);if(existing){if(existing.role==='owner'){if(actor?.role!=='owner')throw new HttpError(403,'Only an owner can change an owner.');if(a.members.filter((m:any)=>m.role==='owner' && !m.pending).length<=1)throw new HttpError(409,'An organisation must keep at least one owner.');}existing.role=body.role;audit(a,'member.role_changed',email);return {email,role:body.role,pending:Boolean(existing.pending)};}a.members.push({idId:null,email,role:body.role,pending:true,addedAt:new Date(now()).toISOString()});audit(a,'member.invited',email);return {email,role:body.role,pending:true};});
       await change(`invites/${digest(email)}`,()=>({orgs:[]}),d=>{if(!d.orgs.includes(ctx.orgId))d.orgs.push(ctx.orgId);});
       return ok(result,201);
     }
-    const memberRemove=path.match(/^\/api\/v1\/members\/([A-Za-z0-9_.@+-]+)\/remove$/);
-    if(req.method==='POST' && memberRemove){const ctx=await context(req,s);await json(req);const email=decodeURIComponent(memberRemove[1]).toLowerCase();return ok(await command(ctx.orgId,s.idId,req,'manage','member.remove',{email},a=>{const target=a.members.find((m:any)=>m.email.toLowerCase()===email);if(!target)throw new HttpError(404,'Member not found.');if(target.role==='owner' && a.members.filter((m:any)=>m.role==='owner' && !m.pending).length<=1)throw new HttpError(409,'An organisation must keep at least one owner.');a.members=a.members.filter((m:any)=>m!==target);audit(a,'member.removed',email);return {removed:true};}));}
+    const memberRemove=path.match(/^\/api\/v1\/members\/([A-Za-z0-9_.@+%-]+)\/remove$/);
+    if(req.method==='POST' && memberRemove){const ctx=await context(req,s);await json(req);const email=decodeURIComponent(memberRemove[1]).toLowerCase();const out=await command(ctx.orgId,s.idId,req,'manage','member.remove',{email},a=>{const actor=a.members.find((m:any)=>m.idId===s.idId);const target=a.members.find((m:any)=>m.email.toLowerCase()===email);if(!target)throw new HttpError(404,'Member not found.');if(target.role==='owner'){if(actor?.role!=='owner')throw new HttpError(403,'Only an owner can remove an owner.');if(a.members.filter((m:any)=>m.role==='owner' && !m.pending).length<=1)throw new HttpError(409,'An organisation must keep at least one owner.');}a.members=a.members.filter((m:any)=>m!==target);audit(a,'member.removed',email);return {removed:true,idId:target.idId};});
+      // Best-effort prune of the removed member's stale membership index so the org drops out of their switcher.
+      if(out.idId)await change(`identity/${out.idId}`,()=>({}),idn=>{if(idn.memberships)idn.memberships=idn.memberships.filter((m:any)=>m.orgId!==ctx.orgId);if(idn.defaultOrgId===ctx.orgId)idn.defaultOrgId=idn.memberships?.[0]?.orgId||null;});
+      return ok({removed:true});}
     if(req.method==='POST' && path==='/api/v1/api-keys'){
       const ctx=await context(req,s), body=await json(req), sourceId=id(body.source_id), keyId=randomUUID().replaceAll('-',''), value=`eb_${keyId}.${secret()}`;
       const record=await command(ctx.orgId,s.idId,req,'write','key.create',{sourceId,keyId},a=>{if(!a.sources.some((v:any)=>v.id===sourceId))throw new HttpError(404,'Source not found.');if(a.keys.length>=100 || a.keys.filter((v:any)=>!v.revoked && v.expires>now()).length>=20)throw new HttpError(409,'Key limit reached. Revoke unused keys or contact support.');const key={id:keyId,sourceId,hash:digest(value),createdAt:new Date(now()).toISOString(),expires:now()+30*86400000,revoked:false};a.keys.push(key);audit(a,'key.created',keyId);return {id:keyId,expires:key.expires};});
@@ -225,7 +232,7 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
       await change(`identity/${partnerId}`,()=>{throw new HttpError(404,'Partner not found.');},idn=>{idn.delegatedOrgs=(idn.delegatedOrgs||[]).filter((o:any)=>o.orgId!==ctx.orgId);idn.delegatedOrgs.push({orgId:ctx.orgId,name:ctx.org.name,scope:'verify'});});
       return ok(result,201);
     }
-    const delRevoke=path.match(/^\/api\/v1\/delegations\/([A-Za-z0-9_.@+-]+)\/revoke$/);
+    const delRevoke=path.match(/^\/api\/v1\/delegations\/([A-Za-z0-9_.@+%-]+)\/revoke$/);
     if(req.method==='POST' && delRevoke){const ctx=await context(req,s);await json(req);const email=decodeURIComponent(delRevoke[1]).toLowerCase();const out=await command(ctx.orgId,s.idId,req,'manage','delegation.revoke',{email},a=>{const d=a.delegations.find((x:any)=>x.email.toLowerCase()===email && !x.revoked);if(!d)throw new HttpError(404,'Delegation not found.');d.revoked=true;audit(a,'delegation.revoked',email);return {revoked:true,partnerId:d.idId};});await change(`identity/${out.partnerId}`,()=>({}),idn=>{if(idn.delegatedOrgs)idn.delegatedOrgs=idn.delegatedOrgs.filter((o:any)=>o.orgId!==ctx.orgId);});return ok({revoked:true});}
     if(req.method==='GET' && path==='/api/v1/delegated'){const identity=await loadIdentity(s.idId);return ok({delegated:(identity?.delegatedOrgs)||[]});}
     if(req.method==='GET' && path==='/api/v1/admin/orgs'){if(!isInternal(s))throw new HttpError(403,'Internal access only.');const index=await storage.read('admin-index/orgs');return ok({orgs:(index?.data.orgs)||[]});}

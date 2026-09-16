@@ -156,10 +156,13 @@ deny-by-default (an undefined non-GET path is 404/403, never a silent write).
 
 ## Build phases
 
-1. Core multi-tenant (satisfies the definition-of-done): drop owner gate, identity+membership,
-   onboarding, header-named org scoping, authz chokepoint (membership-only), `GET /orgs`,
-   frontend onboarding + switcher, cross-tenant isolation tests.
-2. Invitations + email-index, roles + matrix, identity-scoped partner delegation, admin surface.
+1. Core multi-tenant (shipped, PR #6, live): drop owner gate, identity+membership, onboarding,
+   header-named org scoping, authz chokepoint (membership-only), `GET /orgs`, frontend onboarding
+   + switcher, cross-tenant isolation tests.
+2. Roles + invitations + identity-scoped partner delegation + admin surface (shipped, PR #8):
+   capability matrix enforced at the chokepoint and re-checked inside each CAS; invitations with
+   sub-pinned claim on login; delegation granted per partner identity, revoked live; admin as a
+   `sub`-keyed computed per-request role, reads audited; Team tab in the dashboard.
 
 ## Known limitations
 
