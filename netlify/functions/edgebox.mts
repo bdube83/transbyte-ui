@@ -2,6 +2,7 @@ import type { Context, Config } from '@netlify/functions';
 import { getStore, getDeployStore } from '@netlify/blobs';
 import { OAuth2Client } from 'google-auth-library';
 import { application, type Storage } from '../../server/app.ts';
+import { commercialApplication, commercialAccess } from '../../server/commercial.ts';
 
 declare const Netlify: { env: { get(name: string): string | undefined } };
 export default async (request: Request, context: Context) => {
@@ -16,7 +17,6 @@ export default async (request: Request, context: Context) => {
     const origin=production?(Netlify.env.get('EDGEBOX_SITE_ORIGIN') || 'https://edgebox.africa'):url.origin;
     if(!production && (url.protocol!=='https:' || !url.hostname.endsWith(`--${context.site.name}.netlify.app`)))return Response.json({error:'Use the authorised preview URL.'},{status:403});
     if(request.method==='GET' && url.pathname==='/api/v1/health/storage'){
-      // Fixed, non-sensitive sentinel only. This cannot read or change user accounts.
       const key='system/persistence-v1';
       const old=await storage.read(key);
       if(!old)await storage.write(key,{marker:'edgebox-persistence-v1',createdAt:new Date().toISOString()},null);
@@ -29,6 +29,9 @@ export default async (request: Request, context: Context) => {
     const handler=application({storage,settings:{origin,googleClientId,
       internalSubs:(Netlify.env.get('EDGEBOX_INTERNAL_SUBS') || '').split(',').map(x=>x.trim()).filter(Boolean)},
       verifyGoogle:async token=>(await google.verifyIdToken({idToken:token,audience:googleClientId})).getPayload()});
+    if(url.pathname==='/api/v1/commercial' || url.pathname.startsWith('/api/v1/commercial/')){
+      return await commercialApplication({storage,origin,authorize:commercialAccess(handler)})(request,context.ip);
+    }
     return await handler(request,context.ip);
   } catch {
     return Response.json({error:'Service unavailable. Please try again.',request_id:context.requestId},{status:503,headers:{'Cache-Control':'no-store'}});

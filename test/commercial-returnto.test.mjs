@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {safeReturnTo} from '../src/lib/returnTo.mjs';
+test('commercial login returns to the existing commercial route',()=>{assert.equal(safeReturnTo('/commercial'),'/commercial');assert.equal(safeReturnTo('/commercial/'),'/commercial');});
+test('commercial continuation rejects traversal and encoded/absolute redirects',()=>{for(const value of ['https://evil.test','//evil.test','/commercial/../../evil','/app/../commercial','/app/%2e%2e/evil','/commercial?next=https://evil.test','%2fcommercial','/app\\evil'])assert.equal(safeReturnTo(value),'/app');});
