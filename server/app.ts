@@ -1,15 +1,20 @@
-import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 
 type Entry = { data: any; etag: string } | null;
 export type Storage = {
   read(key: string): Promise<Entry>;
   write(key: string, data: any, etag: string | null): Promise<boolean>;
 };
-export type Settings = { origin: string; googleClientId?: string; internalSubs?: string[] };
+export type AdminCredential = { email: string; passwordHash: string; totpSecret: string };
+export type Settings = { origin: string; googleClientId?: string; internalSubs?: string[]; admin?: AdminCredential };
 type Services = { storage: Storage; settings: Settings; verifyGoogle: (token: string) => Promise<any>; now?: () => number };
 class HttpError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status; } }
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('base64url');
+const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+function base32ToBytes(value: string){ const clean=(value||'').replace(/=+$/,'').replace(/\s/g,'').toUpperCase(); let bits=''; for(const c of clean){ const i=B32.indexOf(c); if(i<0)throw new HttpError(400,'Invalid authenticator secret.'); bits+=i.toString(2).padStart(5,'0'); } const bytes=[]; for(let i=0;i+8<=bits.length;i+=8)bytes.push(parseInt(bits.slice(i,i+8),2)); return Buffer.from(bytes); }
+// RFC 6238 TOTP (SHA1, 6 digits, 30s). Exported so tests can compute the expected code for a secret at a time.
+export function totpCode(secretBase32: string, atMs: number){ const key=base32ToBytes(secretBase32), counter=Math.floor(atMs/1000/30), buf=Buffer.alloc(8); buf.writeBigInt64BE(BigInt(counter)); const mac=createHmac('sha1',key).update(buf).digest(), off=mac[mac.length-1]&0xf, bin=((mac[off]&0x7f)<<24)|((mac[off+1]&0xff)<<16)|((mac[off+2]&0xff)<<8)|(mac[off+3]&0xff); return (bin%1000000).toString().padStart(6,'0'); }
 const canonical = (v: any): string => Array.isArray(v) ? `[${v.map(canonical).join(',')}]` : v !== null && typeof v === 'object' ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${canonical(v[k])}`).join(',')}}` : JSON.stringify(v);
 const equal = (a: string, b: string) => typeof a === 'string' && typeof b === 'string' && timingSafeEqual(Buffer.from(digest(a)), Buffer.from(digest(b)));
 const text = (v: any, name: string, max = 120) => { if (typeof v !== 'string' || !v.trim() || v.length > max) throw new HttpError(400, `Check ${name}.`); return v.trim(); };
@@ -63,6 +68,24 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
     return (await loadIdentity(identity.idId))!;
   }
   const isInternal = (s: any) => Boolean(s?.sub && settings.internalSubs?.includes(s.sub));
+  // --- Email/password + TOTP admin (Khusela-style second factor). Credential lives only in env. ---
+  function verifyTotp(secret: string, otp: string){ if(!/^\d{6}$/.test(otp||''))return false; for(let w=-1;w<=1;w++){ let code; try{ code=totpCode(secret,now()+w*30000); }catch{ return false; } if(timingSafeEqual(Buffer.from(code),Buffer.from(otp)))return true; } return false; }
+  function verifyPassword(password: string, stored: string){ const [saltHex,hashHex]=(stored||'').split(':'); if(!saltHex||!hashHex)return false; let got; try{ got=scryptSync(password,Buffer.from(saltHex,'hex'),64); }catch{ return false; } const want=Buffer.from(hashHex,'hex'); return got.length===want.length && timingSafeEqual(got,want); }
+  async function adminAuth(req: Request){
+    const tok=cookies(req)['__Host-eb-admin'];
+    if(tok && tok.length<=100){ const rec=await storage.read(`admin-sessions/${digest(tok)}`), a=rec?.data;
+      if(a && !a.revoked && a.expires>now()){ if(req.method!=='GET' && !equal(req.headers.get('x-csrf-token')||'',a.csrf))throw new HttpError(403,'Refresh the page and try again.'); return {operatorId:`admin:${a.email}`,email:a.email,csrf:a.csrf,key:`admin-sessions/${digest(tok)}`}; } }
+    // Fall back to a Google internal operator so both admin routes reach the same surface.
+    const ctok=cookies(req)['__Host-eb-session'];
+    if(ctok && ctok.length<=100){ const rec=await storage.read(`sessions/${digest(ctok)}`), s=rec?.data;
+      if(s && !s.revoked && s.expires>now()){ if(!isInternal(s))throw new HttpError(403,'This area is for authorised Edgebox operators.'); if(req.method!=='GET' && !equal(req.headers.get('x-csrf-token')||'',s.csrf))throw new HttpError(403,'Refresh the page and try again.'); return {operatorId:s.idId,email:s.email,csrf:s.csrf}; } }
+    throw new HttpError(401,'Admin sign-in required.');
+  }
+  const GATES=[{key:'r100k',label:'R100k / month',target_minor:10000000},{key:'r1m',label:'R1M / month',target_minor:100000000},{key:'r10m',label:'R10M / month',target_minor:1000000000},{key:'r100m',label:'R100M / month',target_minor:10000000000}];
+  const rndInitial=()=>({experiments:[],current_mrr_minor:0,note:'',updatedAt:null});
+  async function rndBoard(){ const r=await storage.read('rnd/board'); return r?r.data:rndInitial(); }
+  const rndStages=['idea','designed','running','measured','decided'];
+  const rndGates=['r100k','r1m','r10m','r100m'];
   const membershipsView = (identity: any) => identity.memberships.map((m: any) => ({org_id:m.orgId,type:m.type,name:m.name,role:m.role}));
   async function startSession(identity: any) {
     const token=secret(), csrf=secret();
@@ -163,6 +186,38 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
         a.events.push({id:eventId,sourceId:source.id,siteId:source.siteId,...data,fingerprint:fp,receivedAt:new Date(now()).toISOString(),acknowledgedAt:null,origin:'external_api'});source.lastSeen=now();audit(a,'event.received',eventId);return {accepted:true,duplicate:false,id:eventId};
       }));
     }
+    // Internal operator surface: email/password + TOTP admin session, or a Google internal session. Before the customer gate.
+    if(req.method==='POST' && path==='/api/v1/admin/login'){
+      await rate('admin-login',30); await rate(`admin-login-ip-${digest(clientIp||'unknown')}`,10);
+      const body=await json(req), email=text(body.email,'email',320).toLowerCase(), password=text(body.password,'password',200), otp=text(body.otp,'code',12);
+      await rate(`admin-login-${digest(email)}`,10);
+      const cfg=settings.admin; if(!cfg?.email || !cfg?.passwordHash || !cfg?.totpSecret)throw new HttpError(503,'Admin sign-in is not configured.');
+      const okEmail=equal(email,cfg.email.toLowerCase()), okPass=verifyPassword(password,cfg.passwordHash), okOtp=verifyTotp(cfg.totpSecret,otp);
+      if(!okEmail || !okPass || !okOtp)throw new HttpError(401,'Invalid email, password or code.');
+      const token=secret(), csrf=secret();
+      if(!await storage.write(`admin-sessions/${digest(token)}`,{email:cfg.email.toLowerCase(),csrf,expires:now()+2*3600000,revoked:false},null))throw new HttpError(503,'Please try signing in again.');
+      return new Response(JSON.stringify({signed_in:true,csrf,operator:{email:cfg.email.toLowerCase()}}),{status:200,headers:{'Content-Type':'application/json','Set-Cookie':`__Host-eb-admin=${token}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=7200`}});
+    }
+    if(path.startsWith('/api/v1/admin/')){
+      const admin=await adminAuth(req); await rate(`admin-${digest(admin.operatorId)}`,300);
+      if(req.method==='GET' && path==='/api/v1/admin/session')return ok({admin:true,operator:{id:admin.operatorId,email:admin.email},csrf:admin.csrf});
+      if(req.method==='POST' && path==='/api/v1/admin/logout'){ await json(req); if(admin.key)await change(admin.key,()=>({}),d=>{d.revoked=true;}); return new Response(JSON.stringify({signed_in:false}),{headers:{'Content-Type':'application/json','Set-Cookie':'__Host-eb-admin=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0'}}); }
+      if(req.method==='GET' && path==='/api/v1/admin/orgs'){const index=await storage.read('admin-index/orgs');return ok({orgs:(index?.data.orgs)||[]});}
+      const adminOrg=path.match(/^\/api\/v1\/admin\/orgs\/([a-f0-9]{32})$/);
+      if(req.method==='GET' && adminOrg){const found=await change(`orgs/${adminOrg[1]}`,()=>{throw new HttpError(404,'Organisation not found.');},a=>{audit(a,'admin.read',admin.email);return a;});return ok(view(found,'viewer'));}
+      if(req.method==='GET' && path==='/api/v1/admin/rnd'){const b=await rndBoard();return ok({stages:rndStages,experiments:b.experiments,gates:{targets:GATES,current_mrr_minor:b.current_mrr_minor||0,note:b.note||''},updatedAt:b.updatedAt});}
+      if(req.method==='POST' && path==='/api/v1/admin/rnd/experiments'){
+        const body=await json(req), title=text(body.title,'title',200), hypothesis=text(body.hypothesis,'hypothesis',1000), cheapest_test=text(body.cheapest_test,'cheapest test',1000);
+        const cost_minor=Number.isSafeInteger(body.cost_minor) && body.cost_minor>=0 && body.cost_minor<=100000000000?body.cost_minor:0, gate=rndGates.includes(body.gate)?body.gate:'r100k';
+        return ok(await change('rnd/board',rndInitial,b=>{ if(b.experiments.length>=500)throw new HttpError(409,'Experiment limit reached.'); const exp={id:randomUUID(),title,hypothesis,cheapest_test,cost_minor,gate,stage:'idea',result:'',decision:'',createdAt:new Date(now()).toISOString(),updatedAt:new Date(now()).toISOString()}; b.experiments.push(exp); b.updatedAt=exp.updatedAt; return exp; }),201);
+      }
+      const rndPatch=path.match(/^\/api\/v1\/admin\/rnd\/experiments\/([A-Za-z0-9_-]+)$/);
+      if(req.method==='POST' && rndPatch){ const body=await json(req); return ok(await change('rnd/board',()=>{throw new HttpError(404,'Experiment not found.');},b=>{ const e=b.experiments.find((x:any)=>x.id===rndPatch[1]); if(!e)throw new HttpError(404,'Experiment not found.'); if(body.stage!==undefined){ if(!rndStages.includes(body.stage))throw new HttpError(400,'Invalid stage.'); e.stage=body.stage; } if(body.title!==undefined)e.title=text(body.title,'title',200); if(body.hypothesis!==undefined)e.hypothesis=text(body.hypothesis,'hypothesis',1000); if(body.cheapest_test!==undefined)e.cheapest_test=text(body.cheapest_test,'cheapest test',1000); if(body.result!==undefined)e.result=String(body.result).slice(0,2000); if(body.decision!==undefined){ if(!['','pursue','kill','iterate'].includes(body.decision))throw new HttpError(400,'Invalid decision.'); e.decision=body.decision; } if(body.cost_minor!==undefined && Number.isSafeInteger(body.cost_minor) && body.cost_minor>=0 && body.cost_minor<=100000000000)e.cost_minor=body.cost_minor; if(body.gate!==undefined && rndGates.includes(body.gate))e.gate=body.gate; e.updatedAt=new Date(now()).toISOString(); b.updatedAt=e.updatedAt; return e; })); }
+      const rndDel=path.match(/^\/api\/v1\/admin\/rnd\/experiments\/([A-Za-z0-9_-]+)\/delete$/);
+      if(req.method==='POST' && rndDel){ await json(req); return ok(await change('rnd/board',()=>{throw new HttpError(404,'Experiment not found.');},b=>{ const before=b.experiments.length; b.experiments=b.experiments.filter((x:any)=>x.id!==rndDel[1]); if(b.experiments.length===before)throw new HttpError(404,'Experiment not found.'); b.updatedAt=new Date(now()).toISOString(); return {deleted:true}; })); }
+      if(req.method==='POST' && path==='/api/v1/admin/rnd/gates'){ const body=await json(req); const mrr=Number.isSafeInteger(body.current_mrr_minor) && body.current_mrr_minor>=0 && body.current_mrr_minor<=1000000000000?body.current_mrr_minor:0, note=typeof body.note==='string'?body.note.slice(0,500):''; return ok(await change('rnd/board',rndInitial,b=>{ b.current_mrr_minor=mrr; b.note=note; b.updatedAt=new Date(now()).toISOString(); return {current_mrr_minor:mrr,note}; })); }
+      throw new HttpError(404,'Endpoint not found.');
+    }
     const s=await auth(req); await rate(`identity-${s.idId}`,120);
     if(req.method==='GET' && path==='/api/v1/auth/session'){const identity=await loadIdentity(s.idId);return ok({signed_in:true,csrf:s.csrf,account:{id:s.idId,email:s.email},onboarding:!identity || identity.memberships.length===0,orgs:identity?membershipsView(identity):[],default_org_id:identity?.defaultOrgId ?? null});}
     if(req.method==='POST' && path==='/api/v1/auth/logout'){
@@ -235,9 +290,6 @@ export function application({ storage, settings, verifyGoogle, now = Date.now }:
     const delRevoke=path.match(/^\/api\/v1\/delegations\/([A-Za-z0-9_.@+%-]+)\/revoke$/);
     if(req.method==='POST' && delRevoke){const ctx=await context(req,s);await json(req);const email=decodeURIComponent(delRevoke[1]).toLowerCase();const out=await command(ctx.orgId,s.idId,req,'manage','delegation.revoke',{email},a=>{const d=a.delegations.find((x:any)=>x.email.toLowerCase()===email && !x.revoked);if(!d)throw new HttpError(404,'Delegation not found.');d.revoked=true;audit(a,'delegation.revoked',email);return {revoked:true,partnerId:d.idId};});await change(`identity/${out.partnerId}`,()=>({}),idn=>{if(idn.delegatedOrgs)idn.delegatedOrgs=idn.delegatedOrgs.filter((o:any)=>o.orgId!==ctx.orgId);});return ok({revoked:true});}
     if(req.method==='GET' && path==='/api/v1/delegated'){const identity=await loadIdentity(s.idId);return ok({delegated:(identity?.delegatedOrgs)||[]});}
-    if(req.method==='GET' && path==='/api/v1/admin/orgs'){if(!isInternal(s))throw new HttpError(403,'Internal access only.');const index=await storage.read('admin-index/orgs');return ok({orgs:(index?.data.orgs)||[]});}
-    const adminOrg=path.match(/^\/api\/v1\/admin\/orgs\/([a-f0-9]{32})$/);
-    if(req.method==='GET' && adminOrg){if(!isInternal(s))throw new HttpError(403,'Internal access only.');const found=await change(`orgs/${adminOrg[1]}`,()=>{throw new HttpError(404,'Organisation not found.');},a=>{audit(a,'admin.read',s.email);return a;});return ok(view(found,'viewer'));}
     throw new HttpError(404,'Endpoint not found.');
   }
   return async (req: Request, clientIp='unknown') => {

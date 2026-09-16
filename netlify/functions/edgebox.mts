@@ -26,8 +26,10 @@ export default async (request: Request, context: Context) => {
     }
     const googleClientId=Netlify.env.get('EDGEBOX_GOOGLE_CLIENT_ID');
     const google=new OAuth2Client(googleClientId);
+    const adminEmail=Netlify.env.get('EDGEBOX_ADMIN_EMAIL'), adminPasswordHash=Netlify.env.get('EDGEBOX_ADMIN_PASSWORD_HASH'), adminTotpSecret=Netlify.env.get('EDGEBOX_ADMIN_TOTP_SECRET');
     const handler=application({storage,settings:{origin,googleClientId,
-      internalSubs:(Netlify.env.get('EDGEBOX_INTERNAL_SUBS') || '').split(',').map(x=>x.trim()).filter(Boolean)},
+      internalSubs:(Netlify.env.get('EDGEBOX_INTERNAL_SUBS') || '').split(',').map(x=>x.trim()).filter(Boolean),
+      admin:(adminEmail && adminPasswordHash && adminTotpSecret)?{email:adminEmail,passwordHash:adminPasswordHash,totpSecret:adminTotpSecret}:undefined},
       verifyGoogle:async token=>(await google.verifyIdToken({idToken:token,audience:googleClientId})).getPayload()});
     if(url.pathname==='/api/v1/commercial' || url.pathname.startsWith('/api/v1/commercial/')){
       return await commercialApplication({storage,origin,authorize:commercialAccess(handler)})(request,context.ip);
