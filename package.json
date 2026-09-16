@@ -1,6 +1,6 @@
 {
   "name": "edgebox-africa", "private": true, "version": "0.1.0", "type": "module",
-  "scripts": {"dev":"vite","build":"vite build","preview":"vite preview","test:api":"node --experimental-strip-types --test test/live-api.test.mjs"},
+  "scripts": {"dev":"vite","build":"vite build","preview":"vite preview","test:api":"node --experimental-strip-types --test test/live-api.test.mjs test/returnto.test.mjs"},
   "dependencies": {
     "@netlify/blobs":"11.1.0","@netlify/functions":"^4.0.0","google-auth-library":"10.5.0",
     "@googlemaps/react-wrapper":"^1.1.35","@reach/combobox":"^0.18.0","@react-google-maps/api":"^2.18.1","@turf/turf":"^7.2.0","axios":"^1.4.0","framer-motion":"^12.4.10","install":"^0.13.0","leaflet":"^1.9.3","leaflet-geosearch":"^4.0.0","lodash":"^4.17.21","mapbox-gl":"^3.10.0","npm":"^11.1.0","react":"^18.2.0","react-counter-input":"^0.2.1","react-currency-format":"^1.1.0","react-dom":"^18.2.0","react-icons":"^5.5.0","react-leaflet":"^4.2.1","react-map-gl":"^7.0.14","react-phone-number-input":"^3.3.6","react-router-dom":"^6.14.1","use-places-autocomplete":"^4.0.0","viewport-mercator-project":"^7.0.4"
