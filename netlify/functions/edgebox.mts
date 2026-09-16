@@ -26,7 +26,8 @@ export default async (request: Request, context: Context) => {
     }
     const googleClientId=Netlify.env.get('EDGEBOX_GOOGLE_CLIENT_ID');
     const google=new OAuth2Client(googleClientId);
-    const handler=application({storage,settings:{origin,googleClientId},
+    const handler=application({storage,settings:{origin,googleClientId,
+      internalSubs:(Netlify.env.get('EDGEBOX_INTERNAL_SUBS') || '').split(',').map(x=>x.trim()).filter(Boolean)},
       verifyGoogle:async token=>(await google.verifyIdToken({idToken:token,audience:googleClientId})).getPayload()});
     return await handler(request,context.ip);
   } catch {
