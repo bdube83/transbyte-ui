@@ -173,12 +173,12 @@ export function commercialView(s: CommercialState, now: number) {
 export function commercialAccess(base: (req: Request,ip?: string)=>Promise<Response>) {
   return async (req: Request,ip: string) => {
     const headers=new Headers(req.headers);headers.delete('content-type');headers.delete('content-length');
-    const request=(path:string)=>new Request(new URL(path,req.url),{headers,method:'GET'});
-    const sessionResponse=await base(request('/api/v1/auth/session'),ip);if(!sessionResponse.ok)fail('Sign in to Edgebox.',sessionResponse.status===401?401:503);
-    const session=await sessionResponse.json();
-    const admin=await base(request('/api/v1/admin/orgs'),ip);if(!admin.ok)fail('This workspace is for authorised Edgebox sales operators.',admin.status===403?403:admin.status===401?401:503);
+    // One probe covers both admin routes: an email/password+TOTP admin session or a Google internal session.
+    const probe=await base(new Request(new URL('/api/v1/admin/session',req.url),{headers,method:'GET'}),ip);
+    if(!probe.ok)fail(probe.status===403?'This workspace is for authorised Edgebox operators.':'Sign in to Edgebox.',probe.status===403?403:probe.status===401?401:503);
+    const session=await probe.json();
     if(req.method!=='GET' && (!session.csrf || !equal(req.headers.get('x-csrf-token')||'',session.csrf)))fail('Refresh the page and try again.',403);
-    return str(session.account?.id,'operator identity',120);
+    return str(session.operator?.id,'operator identity',120);
   };
 }
 export function commercialApplication({storage,origin,authorize,now=Date.now}:{storage:Storage;origin:string;authorize:(req:Request,ip:string)=>Promise<string>;now?:()=>number}) {
